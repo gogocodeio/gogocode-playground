@@ -1,3 +1,4 @@
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 module.exports = {
   style: {
     postcss: {
@@ -7,4 +8,9 @@ module.exports = {
       ],
     },
   },
+  webpack: {
+    plugins: [
+      new MonacoWebpackPlugin()
+    ]
+  }
 }
