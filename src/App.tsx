@@ -8,6 +8,7 @@ import prettier from 'prettier/standalone';
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
 import { Switch } from 'antd';
+import useWindowSize from './hooks/useWindowSize';
 
 const defaultWorkCode = `function transform($, sourceCode) {
   // 在这里返回你生成的代码
@@ -47,8 +48,6 @@ function App() {
   const [workCode, setWorkCode] = useState(defaultWorkCode);
   const [code1, setCode1] = useState(defaultCode1);
   const code2 = runGoGoCode(code1, workCode);
-  const winWidth = window.innerWidth;
-  const winHeight = window.innerHeight;
 
   const code1ToShow = useMemo(() => {
     return hasPrettier ? runPrettier(code1) : code1;
@@ -57,6 +56,8 @@ function App() {
   const code2ToShow = useMemo(() => {
     return hasPrettier ? runPrettier(code2) : code2;
   }, [hasPrettier, code2]);
+
+  const { width: winWidth, height: winHeight } = useWindowSize();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -99,8 +100,8 @@ function App() {
               <div>对比结果</div>
               <div>
                 <Switch
-                  checkedChildren="使用Prettier"
-                  unCheckedChildren="不使用Prettier"
+                  checkedChildren="格式化"
+                  unCheckedChildren="格式化"
                   checked={hasPrettier}
                   onChange={setHasPrettier}
                 />
