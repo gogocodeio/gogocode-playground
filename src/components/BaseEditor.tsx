@@ -8,6 +8,7 @@ type Editor = monacoEditor.editor.IStandaloneCodeEditor;
 interface Props {
   code: string;
   onChange: (code: string) => void;
+  language: string;
 }
 
 function BaseEditor(props: Props) {
@@ -19,9 +20,14 @@ function BaseEditor(props: Props) {
   return (
     <div ref={ref} className="w-full h-full">
       <MonacoEditor
-        language="javascript"
+        language={props.language}
         theme="vs-dark"
         value={props.code}
+        options={{
+          minimap: {
+            enabled: false,
+          },
+        }}
         onChange={props.onChange}
         editorDidMount={(editor: Editor) => (editorRef.current = editor)}
       />

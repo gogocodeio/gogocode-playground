@@ -33,6 +33,7 @@ function runPrettier(sourceCode: string) {
       tabWidth: 2,
       semi: false,
       singleQuote: true,
+      printWidth: 40,
       plugins: [parserBabel, parserHtml],
     });
   } catch (error) {
@@ -78,11 +79,19 @@ function App() {
           >
             {hasSourceCode && (
               <div className="h-full flex-1">
-                <BaseEditor code={code1} onChange={setCode1} />
+                <BaseEditor
+                  code={code1}
+                  onChange={setCode1}
+                  language="typescript"
+                />
               </div>
             )}
             <div className="h-full flex-1">
-              <BaseEditor code={workCode} onChange={setWorkCode} />
+              <BaseEditor
+                code={workCode}
+                onChange={setWorkCode}
+                language="javascript"
+              />
             </div>
           </SplitPane>
           <div className="h-full w-full">
