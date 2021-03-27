@@ -1,6 +1,7 @@
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const {
   override,
+  addLoader,
   addPlugin,
   addPostcssPlugins
 } = require('@ali/customize-cra-extra');
@@ -15,7 +16,14 @@ module.exports = {
         addPostcssPlugins([
           require('tailwindcss'),
           require('autoprefixer'),
-        ])
+        ]),
+        addLoader({
+          test: /\.(ttf|eot|svg|woff|woff2)$/,
+          include: /node_modules/,
+          use: [{
+            loader: 'url-loader',
+          }]
+        }),
       )(config, env);
     }
   },
