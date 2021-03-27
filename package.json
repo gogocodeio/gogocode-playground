@@ -23,9 +23,9 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
+    "start": "craco-cli start",
+    "build": "craco-cli build",
+    "test": "craco-cli test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -47,12 +47,14 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^6.1.1",
+    "@ali/craco-cli": "2.1.6-beta.1",
     "@tailwindcss/postcss7-compat": "^2.0.4",
-    "autoprefixer": "^9",
+    "babel-loader": "8.1.0",
     "monaco-editor-webpack-plugin": "^3.0.1",
-    "postcss": "^7",
     "raw-loader": "^4.0.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat"
+  },
+  "tnpm": {
+    "mode": "yarn"
   }
 }
