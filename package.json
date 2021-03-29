@@ -26,6 +26,8 @@
     "start": "craco-cli start",
     "build": "craco-cli build",
     "test": "craco-cli test",
+    "daily": "craco-cli daily",
+    "publish": "craco-cli publish",
     "eject": "react-scripts eject",
     "gh-pages": "gh-pages -d public -r https://github.com/gogocodeio/gogocode-playground.git"
   },
