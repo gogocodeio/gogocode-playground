@@ -26,7 +26,8 @@
     "start": "craco-cli start",
     "build": "craco-cli build",
     "test": "craco-cli test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "gh-pages": "gh-pages -d public -r https://github.com/gogocodeio/gogocode-playground.git"
   },
   "eslintConfig": {
     "extends": [
