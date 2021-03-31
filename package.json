@@ -29,7 +29,6 @@
     "daily": "craco-cli daily",
     "publish": "craco-cli publish",
     "createDaily": "craco-cli createDaily",
-    "eject": "react-scripts eject",
     "gh-pages": "gh-pages -d public -r https://github.com/gogocodeio/gogocode-playground.git"
   },
   "eslintConfig": {
