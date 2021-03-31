@@ -60,5 +60,8 @@
   },
   "tnpm": {
     "mode": "yarn"
+  },
+  "engines": {
+    "install-node": "14.16.0"
   }
 }
