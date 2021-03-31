@@ -5,8 +5,6 @@
 请使用 Node 14 版本
 ### Yarn
 
-为了多 repo 管理，借助了 yarn 的 workspace 能力，因此需要用 yarn 而不是 npm 管理
-
 安装 Yarn：
 
 `npm install -g yarn`
@@ -26,3 +24,12 @@
 ### 启动
 
 `yarn start`
+## 发布
+
+`yarn run createDaily`
+
+`yarn run daily`
+
+`yarn run publish`
+
+切换到 gh-pages 分支，修改 index.html 的 cdn 前缀，commit & push 即可
