@@ -5,10 +5,8 @@
       "cmd": [
         "tnpm install -g n",
         "n 12",
-        "tnpm install -g yarn",
-        "yarn config set registry https://registry.npm.alibaba-inc.com",
-        "yarn",
-        "yarn run build",
+        "tnpm i",
+        "tnpm run build",
         "mv ./build $BUILD_DEST"
       ]
     }
