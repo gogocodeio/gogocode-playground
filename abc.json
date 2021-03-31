@@ -3,7 +3,8 @@
     "type": "command",
     "command": {
       "cmd": [
-        "tnpm install --install-node=12",
+        "tnpm install -g n",
+        "n 12",
         "tnpm install -g yarn",
         "yarn config set registry https://registry.npm.taobao.org/",
         "yarn",
