@@ -4,8 +4,8 @@
     "command": {
       "cmd": [
         "tnpm install --install-node=12",
-        "tnpm i",
-        "npm run build",
+        "yarn",
+        "yarn run build",
         "mv ./build $BUILD_DEST"
       ]
     }
