@@ -3,7 +3,7 @@
     "type": "command",
     "command": {
       "cmd": [
-        "tnpm install --install-node=14.16.0",
+        "tnpm install --install-node=14",
         "tnpm i",
         "npm run build",
         "mv ./build $BUILD_DEST"
