@@ -10,7 +10,7 @@
 }
 
 .Resizer {
-  background: #1e1e1e;
+  background-color: #1e1e1e;
   z-index: 1;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;

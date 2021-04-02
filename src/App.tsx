@@ -1,14 +1,14 @@
-import { useMemo, useState } from 'react';
-import './App.css';
-import BaseEditor from './components/BaseEditor';
-import DiffEditor from './components/DiffEditor';
-import SplitPane from 'react-split-pane';
-import $ from 'gogocode';
-import prettier from 'prettier/standalone';
-import parserBabel from 'prettier/parser-babel';
-import parserHtml from 'prettier/parser-html';
-import { Switch } from 'antd';
-import useWindowSize from './hooks/useWindowSize';
+import { useMemo, useState } from "react";
+import "./App.css";
+import BaseEditor from "./components/BaseEditor";
+import DiffEditor from "./components/DiffEditor";
+import SplitPane from "react-split-pane";
+import $ from "gogocode";
+import prettier from "prettier/standalone";
+import parserBabel from "prettier/parser-babel";
+import parserHtml from "prettier/parser-html";
+import { Switch } from "antd";
+import useWindowSize from "./hooks/useWindowSize";
 
 const defaultWorkCode = `function transform($, sourceCode) {
   // 在这里返回你生成的代码
@@ -20,17 +20,17 @@ const b = 2`;
 function runGoGoCode(sourceCode: string, workCode: string) {
   try {
     // eslint-disable-next-line no-new-func
-    const func = new Function('return ' + workCode)();
+    const func = new Function("return " + workCode)();
     return func($, sourceCode);
   } catch (e) {
-    return '/**\n出错了！\n' + e + '\n**/';
+    return "/**\n出错了！\n" + e + "\n**/";
   }
 }
 
 function runPrettier(sourceCode: string) {
   try {
     return prettier.format(sourceCode, {
-      trailingComma: 'es5',
+      trailingComma: "es5",
       tabWidth: 2,
       semi: false,
       singleQuote: true,
@@ -61,20 +61,44 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="text-xl bg-dark flex-none px-6 py-4 text-white">
-        GoGoCode PlayGround
+      <div className="bg-dark flex-none flex justify-between px-6 py-4">
+        <h1 className="text-xl text-white">GoGoCode PlayGround</h1>
+        <div className="text-xl text-white">
+          <a
+            className="mr-5"
+            href="https://gogocode.io"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GoGoCode
+          </a>
+          <a
+            className="mr-5"
+            href="https://github.com/thx/gogocode"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Github
+          </a>
+        </div>
+      </div>
+      <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
+        <div>待转换代码</div>
+        <div>
+          转换代码
+        </div>
       </div>
       <div className="relative flex-auto">
         <SplitPane
           split="horizontal"
-          defaultSize="50%"
+          defaultSize="55%"
           minSize={100}
           maxSize={winHeight - 100}
         >
           <SplitPane
             className="h-full w-full"
             split="vertical"
-            defaultSize={hasSourceCode ? '50%' : '100%'}
+            defaultSize={hasSourceCode ? winWidth / 2 - 16 : "100%"}
             minSize={100}
             maxSize={winWidth - 100}
           >
@@ -97,7 +121,7 @@ function App() {
           </SplitPane>
           <div className="h-full w-full">
             <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
-              <div>对比结果</div>
+              <div>转换结果对比</div>
               <div>
                 <Switch
                   checkedChildren="格式化"
