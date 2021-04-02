@@ -93,7 +93,7 @@ function App() {
           split="horizontal"
           defaultSize="55%"
           minSize={100}
-          maxSize={winHeight - 100}
+          maxSize={winHeight - 130}
         >
           <SplitPane
             className="h-full w-full"
