@@ -5382,6 +5382,10 @@ git-url-parse@^6.2.2:
   dependencies:
     git-up "^2.0.0"
 
+github-buttons@^2.8.0:
+  version "2.14.4"
+  resolved "https://registry.npm.alibaba-inc.com/github-buttons/download/github-buttons-2.14.4.tgz#f4b335d1af235bfb4a4598162e8f2ca190635124"
+
 github-username@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npm.alibaba-inc.com/github-username/download/github-username-3.0.0.tgz#0a772219b3130743429f2456d0bdd3db55dce7b1"
@@ -9711,6 +9715,12 @@ react-error-overlay@^6.0.9:
   version "6.0.9"
   resolved "https://registry.npm.alibaba-inc.com/react-error-overlay/download/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
 
+react-github-btn@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npm.alibaba-inc.com/react-github-btn/download/react-github-btn-1.2.0.tgz#464066f999a77c0eed27980260601b51cbe15614"
+  dependencies:
+    github-buttons "^2.8.0"
+
 react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
   resolved "https://registry.npm.alibaba-inc.com/react-is/download/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -12193,6 +12203,10 @@ worker-rpc@^0.1.0:
   resolved "https://registry.npm.alibaba-inc.com/worker-rpc/download/worker-rpc-0.1.1.tgz#cb565bd6d7071a8f16660686051e969ad32f54d5"
   dependencies:
     microevent.ts "~0.1.1"
+
+wouter@^2.7.4:
+  version "2.7.4"
+  resolved "https://registry.npm.alibaba-inc.com/wouter/download/wouter-2.7.4.tgz#d528122cacf6e9805d7b953bbddfb90226850977"
 
 wrap-ansi@^5.1.0:
   version "5.1.0"

@@ -12,23 +12,31 @@ interface Props {
 }
 
 function BaseEditor(props: Props) {
+  const { language, code, onChange } = props;
   const editorRef = useRef<Editor>();
   const { width, height, ref } = useResizeDetector();
+
   useEffect(() => {
     editorRef.current?.layout();
   }, [width, height]);
+
+  // useEffect(() => {
+  //   const model = editorRef.current?.getModel();
+  //   model && monacoEditor.editor.setModelLanguage(model, language);
+  // }, [language]);
+
   return (
     <div ref={ref} className="w-full h-full">
       <MonacoEditor
-        language={props.language}
+        language={language}
         theme="vs-dark"
-        value={props.code}
+        value={code}
         options={{
           minimap: {
             enabled: false,
           },
         }}
-        onChange={props.onChange}
+        onChange={onChange}
         editorDidMount={(editor: Editor) => (editorRef.current = editor)}
       />
     </div>
