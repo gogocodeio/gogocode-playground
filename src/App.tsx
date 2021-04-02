@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useLocalStorageState } from "ahooks";
 import "./App.css";
 import BaseEditor from "./components/BaseEditor";
 import DiffEditor from "./components/DiffEditor";
@@ -7,15 +8,14 @@ import $ from "gogocode";
 import prettier from "prettier/standalone";
 import parserBabel from "prettier/parser-babel";
 import parserHtml from "prettier/parser-html";
-import { Switch } from "antd";
+import { Switch, Button } from "antd";
 import useWindowSize from "./hooks/useWindowSize";
 
-const defaultWorkCode = `function transform($, sourceCode) {
+const defaultWorkCode = runPrettier(`function transform($, sourceCode) {
   // 在这里返回你生成的代码
   return $(sourceCode).replace('const a = $_$', 'const a = 2').generate();
-}`;
-const defaultCode1 = `const a = 1
-const b = 2`;
+}`);
+const defaultCode1 = runPrettier(`const a = 1;const b = 2`);
 
 function runGoGoCode(sourceCode: string, workCode: string) {
   try {
@@ -45,12 +45,24 @@ function runPrettier(sourceCode: string) {
 function App() {
   const hasSourceCode = true;
   const [hasPrettier, setHasPrettier] = useState(true);
-  const [workCode, setWorkCode] = useState(defaultWorkCode);
-  const [code1, setCode1] = useState(defaultCode1);
-  const code2 = runGoGoCode(code1, workCode);
+  const [workCode, setWorkCode] = useLocalStorageState(
+    "transformCode",
+    defaultWorkCode
+  );
+  const [code1, setCode1] = useLocalStorageState("inputCode", defaultCode1);
+
+  const resetCode = () => {
+    setWorkCode(defaultWorkCode);
+    setCode1(defaultCode1);
+  };
+
+  const code2 = useMemo(() => runGoGoCode(code1 || "", workCode || ""), [
+    code1,
+    workCode,
+  ]);
 
   const code1ToShow = useMemo(() => {
-    return hasPrettier ? runPrettier(code1) : code1;
+    return hasPrettier ? runPrettier(code1 || "") : code1;
   }, [hasPrettier, code1]);
 
   const code2ToShow = useMemo(() => {
@@ -82,12 +94,6 @@ function App() {
           </a>
         </div>
       </div>
-      <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
-        <div>待转换代码</div>
-        <div>
-          转换代码
-        </div>
-      </div>
       <div className="relative flex-auto">
         <SplitPane
           split="horizontal"
@@ -98,22 +104,41 @@ function App() {
           <SplitPane
             className="h-full w-full"
             split="vertical"
-            defaultSize={hasSourceCode ? winWidth / 2 - 16 : "100%"}
+            defaultSize={hasSourceCode ? "50%" : "100%"}
             minSize={100}
             maxSize={winWidth - 100}
           >
             {hasSourceCode && (
               <div className="h-full flex-1">
+                <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
+                  待转换代码
+                </div>
                 <BaseEditor
-                  code={code1}
+                  code={code1 || ""}
                   onChange={setCode1}
                   language="typescript"
                 />
               </div>
             )}
             <div className="h-full flex-1">
+              <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
+                <div>转换代码(JavaScript)</div>
+                <div>
+                  <Button type="link" className="mr5" onClick={resetCode}>
+                    重置代码
+                  </Button>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setWorkCode(runPrettier(workCode));
+                    }}
+                  >
+                    格式化
+                  </Button>
+                </div>
+              </div>
               <BaseEditor
-                code={workCode}
+                code={workCode || ""}
                 onChange={setWorkCode}
                 language="javascript"
               />
