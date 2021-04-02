@@ -104,7 +104,7 @@ function App() {
           <SplitPane
             className="h-full w-full"
             split="vertical"
-            defaultSize={hasSourceCode ? "50%" : "100%"}
+            defaultSize={hasSourceCode ? "49%" : "100%"}
             minSize={100}
             maxSize={winWidth - 100}
           >
