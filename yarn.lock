@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@ahooksjs/use-request@^2.8.3":
+  version "2.8.4"
+  resolved "https://registry.npm.alibaba-inc.com/@ahooksjs/use-request/download/@ahooksjs/use-request-2.8.4.tgz#c404dce2c984f1ce8573e6577582cc9656a71e37"
+  dependencies:
+    lodash.debounce "^4.0.8"
+    lodash.throttle "^4.1.1"
+
 "@ali/craco-cli@2.1.6-beta.2":
   version "2.1.6-beta.2"
   resolved "https://registry.npm.alibaba-inc.com/@ali/craco-cli/download/@ali/craco-cli-2.1.6-beta.2.tgz#d0c1c45e88c70309128fc091b44735b223f7dbb0"
@@ -1759,6 +1766,10 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
+"@types/js-cookie@^2.2.6":
+  version "2.2.6"
+  resolved "https://registry.npm.alibaba-inc.com/@types/js-cookie/download/@types/js-cookie-2.2.6.tgz#f1a1cb35aff47bc5cfb05cb0c441ca91e914c26f"
+
 "@types/json-schema@*", "@types/json-schema@^7.0.3", "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.6":
   version "7.0.7"
   resolved "https://registry.npm.alibaba-inc.com/@types/json-schema/download/@types/json-schema-7.0.7.tgz#98a993516c859eb0d5c4c8f098317a9ea68db9ad"
@@ -2181,6 +2192,21 @@ aggregate-error@^3.0.0:
   dependencies:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
+
+ahooks@^2.9.6:
+  version "2.9.6"
+  resolved "https://registry.npm.alibaba-inc.com/ahooks/download/ahooks-2.9.6.tgz#afde34cc7af722da1c724fddf75c9191672ac2f5"
+  dependencies:
+    "@ahooksjs/use-request" "^2.8.3"
+    "@types/js-cookie" "^2.2.6"
+    dayjs "^1.9.1"
+    intersection-observer "^0.7.0"
+    js-cookie "^2.2.1"
+    lodash.debounce "^4.0.8"
+    lodash.isequal "^4.5.0"
+    lodash.throttle "^4.1.1"
+    resize-observer-polyfill "^1.5.1"
+    screenfull "^5.0.0"
 
 ajv-errors@^1.0.0:
   version "1.0.1"
@@ -3382,6 +3408,10 @@ cloneable-readable@^1.0.0:
     process-nextick-args "^2.0.0"
     readable-stream "^2.3.5"
 
+clsx@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npm.alibaba-inc.com/clsx/download/clsx-1.1.1.tgz#98b3134f9abbdf23b2663491ace13c5c03a73188"
+
 co@^4.0.0, co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.npm.alibaba-inc.com/co/download/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -3984,6 +4014,10 @@ date-fns@^2.15.0:
 dateformat@^3.0.3:
   version "3.0.3"
   resolved "https://registry.npm.alibaba-inc.com/dateformat/download/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
+
+dayjs@^1.9.1:
+  version "1.10.4"
+  resolved "https://registry.npm.alibaba-inc.com/dayjs/download/dayjs-1.10.4.tgz#8e544a9b8683f61783f570980a8a80eaf54ab1e2"
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.3, debug@^2.6.4, debug@^2.6.9:
   version "2.6.9"
@@ -6041,6 +6075,10 @@ interpret@^1.0.0:
   version "1.4.0"
   resolved "https://registry.npm.alibaba-inc.com/interpret/download/interpret-1.4.0.tgz#665ab8bc4da27a774a40584e812e3e0fa45b1a1e"
 
+intersection-observer@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.npm.alibaba-inc.com/intersection-observer/download/intersection-observer-0.7.0.tgz#ee16bee978db53516ead2f0a8154b09b400bbdc9"
+
 ip-regex@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npm.alibaba-inc.com/ip-regex/download/ip-regex-2.1.0.tgz#fa78bf5d2e6913c911ce9f819ee5146bb6d844e9"
@@ -6876,6 +6914,10 @@ jest@26.6.0:
     import-local "^3.0.2"
     jest-cli "^26.6.0"
 
+js-cookie@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.npm.alibaba-inc.com/js-cookie/download/js-cookie-2.2.1.tgz#69e106dc5d5806894562902aa5baec3744e9b2b8"
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npm.alibaba-inc.com/js-tokens/download/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -7206,6 +7248,10 @@ lodash.flatten@^4.4.0:
 lodash.flow@^3.5.0:
   version "3.5.0"
   resolved "https://registry.npm.alibaba-inc.com/lodash.flow/download/lodash.flow-3.5.0.tgz#87bf40292b8cf83e4e8ce1a3ae4209e20071675a"
+
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.npm.alibaba-inc.com/lodash.isequal/download/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
 
 lodash.memoize@^4.1.2:
   version "4.1.2"
@@ -10382,6 +10428,10 @@ schema-utils@^3.0.0:
 scoped-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.alibaba-inc.com/scoped-regex/download/scoped-regex-1.0.0.tgz#a346bb1acd4207ae70bd7c0c7ca9e566b6baddb8"
+
+screenfull@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.npm.alibaba-inc.com/screenfull/download/screenfull-5.1.0.tgz#85c13c70f4ead4c1b8a935c70010dfdcd2c0e5c8"
 
 scroll-into-view-if-needed@^2.2.25:
   version "2.2.28"
