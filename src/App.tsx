@@ -4,12 +4,24 @@ import "./App.css";
 import BaseEditor from "./components/BaseEditor";
 import DiffEditor from "./components/DiffEditor";
 import SplitPane from "react-split-pane";
-import $ from "gogocode";
-import prettier from "prettier/standalone";
-import parserBabel from "prettier/parser-babel";
-import parserHtml from "prettier/parser-html";
-import { Switch, Button } from "antd";
+import { Switch, Button, Select } from "antd";
 import useWindowSize from "./hooks/useWindowSize";
+import { runPrettier, runGoGoCode } from "./utils/index";
+
+const INPUT_LANG_LIST = [
+  {
+    value: "typescript",
+    label: "typescript",
+  },
+  {
+    value: "javascript",
+    label: "javascript",
+  },
+  {
+    value: "html",
+    label: "html",
+  },
+];
 
 const defaultWorkCode = runPrettier(`function transform($, sourceCode) {
   // 在这里返回你生成的代码
@@ -17,57 +29,38 @@ const defaultWorkCode = runPrettier(`function transform($, sourceCode) {
 }`);
 const defaultCode1 = runPrettier(`const a = 1;const b = 2`);
 
-function runGoGoCode(sourceCode: string, workCode: string) {
-  try {
-    // eslint-disable-next-line no-new-func
-    const func = new Function("return " + workCode)();
-    return func($, sourceCode);
-  } catch (e) {
-    return "/**\n出错了！\n" + e + "\n**/";
-  }
-}
-
-function runPrettier(sourceCode: string) {
-  try {
-    return prettier.format(sourceCode, {
-      trailingComma: "es5",
-      tabWidth: 2,
-      semi: false,
-      singleQuote: true,
-      printWidth: 40,
-      plugins: [parserBabel, parserHtml],
-    });
-  } catch (error) {
-    return error.toString();
-  }
-}
-
 function App() {
   const hasSourceCode = true;
   const [hasPrettier, setHasPrettier] = useState(true);
-  const [workCode, setWorkCode] = useLocalStorageState(
+  const [workCode = defaultWorkCode, setWorkCode] = useLocalStorageState(
     "transformCode",
     defaultWorkCode
   );
-  const [code1, setCode1] = useLocalStorageState("inputCode", defaultCode1);
+  const [code1 = defaultCode1, setCode1] = useLocalStorageState(
+    "inputCode",
+    defaultCode1
+  );
 
-  const resetCode = () => {
-    setWorkCode(defaultWorkCode);
-    setCode1(defaultCode1);
-  };
-
-  const code2 = useMemo(() => runGoGoCode(code1 || "", workCode || ""), [
-    code1,
-    workCode,
-  ]);
+  const code2 = useMemo(() => runGoGoCode(code1, workCode), [code1, workCode]);
 
   const code1ToShow = useMemo(() => {
-    return hasPrettier ? runPrettier(code1 || "") : code1;
+    return hasPrettier ? runPrettier(code1) : code1;
   }, [hasPrettier, code1]);
 
   const code2ToShow = useMemo(() => {
     return hasPrettier ? runPrettier(code2) : code2;
   }, [hasPrettier, code2]);
+
+  const [inputLang = "typescript", setInputLang] = useLocalStorageState(
+    "inputLang",
+    "typescript"
+  );
+
+  const reset = () => {
+    setWorkCode(defaultWorkCode);
+    setCode1(defaultCode1);
+    setInputLang("typescript");
+  };
 
   const { width: winWidth, height: winHeight } = useWindowSize();
 
@@ -111,12 +104,20 @@ function App() {
             {hasSourceCode && (
               <div className="h-full flex-1">
                 <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
-                  待转换代码
+                  <div>待转换代码</div>
+                  <div>
+                    <Select
+                      options={INPUT_LANG_LIST}
+                      value={inputLang}
+                      onSelect={setInputLang}
+                      className="w-32"
+                    />
+                  </div>
                 </div>
                 <BaseEditor
-                  code={code1 || ""}
+                  code={code1}
                   onChange={setCode1}
-                  language="typescript"
+                  language={inputLang}
                 />
               </div>
             )}
@@ -124,7 +125,7 @@ function App() {
               <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
                 <div>转换代码(JavaScript)</div>
                 <div>
-                  <Button type="link" className="mr5" onClick={resetCode}>
+                  <Button type="link" className="mr5" onClick={reset}>
                     重置代码
                   </Button>
                   <Button
@@ -138,7 +139,7 @@ function App() {
                 </div>
               </div>
               <BaseEditor
-                code={workCode || ""}
+                code={workCode}
                 onChange={setWorkCode}
                 language="javascript"
               />
@@ -156,7 +157,11 @@ function App() {
                 />
               </div>
             </div>
-            <DiffEditor code1={code1ToShow} code2={code2ToShow} />
+            <DiffEditor
+              code1={code1ToShow}
+              code2={code2ToShow}
+              language={inputLang}
+            />
           </div>
         </SplitPane>
       </div>

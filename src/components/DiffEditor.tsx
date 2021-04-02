@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { MonacoDiffEditor } from 'react-monaco-editor';
-import { useResizeDetector } from 'react-resize-detector';
-import * as monaco from 'monaco-editor';
-import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import { useEffect, useRef } from "react";
+import { MonacoDiffEditor } from "react-monaco-editor";
+import { useResizeDetector } from "react-resize-detector";
+import * as monaco from "monaco-editor";
+import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 
 type Editor = monacoEditor.editor.IStandaloneDiffEditor;
 
@@ -10,6 +10,7 @@ interface Props {
   code1: string;
   code2: string;
   onCode1Change?: (code: string) => void;
+  language: string;
 }
 
 monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
@@ -26,7 +27,7 @@ function DiffEditor(props: Props) {
   return (
     <div ref={ref} className="w-full h-full">
       <MonacoDiffEditor
-        language="typescript"
+        language={props.language}
         theme="vs-dark"
         original={props.code1}
         value={props.code2}
