@@ -9,10 +9,11 @@ interface Props {
   code: string;
   onChange: (code: string) => void;
   language: string;
+  onSave?: () => void;
 }
 
 function BaseEditor(props: Props) {
-  const { language, code, onChange } = props;
+  const { language, code, onChange, onSave = () => {} } = props;
   const editorRef = useRef<Editor>();
   const { width, height, ref } = useResizeDetector();
 
@@ -20,10 +21,10 @@ function BaseEditor(props: Props) {
     editorRef.current?.layout();
   }, [width, height]);
 
-  // useEffect(() => {
-  //   const model = editorRef.current?.getModel();
-  //   model && monacoEditor.editor.setModelLanguage(model, language);
-  // }, [language]);
+  useEffect(() => {
+    const editor = editorRef.current;
+    editor && editor.addCommand(monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyCode.KEY_S, onSave);
+  }, [onSave]);
 
   return (
     <div ref={ref} className="w-full h-full">
@@ -37,7 +38,9 @@ function BaseEditor(props: Props) {
           },
         }}
         onChange={onChange}
-        editorDidMount={(editor: Editor) => (editorRef.current = editor)}
+        editorDidMount={(editor: Editor) => {
+          editorRef.current = editor;
+        }}
       />
     </div>
   );

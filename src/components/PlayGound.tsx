@@ -1,7 +1,7 @@
 import { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
-import { useWindowSize } from 'react-use';
+import { useHash, useWindowSize } from 'react-use';
 import { runPrettier, runGoGoCode } from '../utils/index';
 
 import BaseEditor from './BaseEditor';
@@ -15,6 +15,14 @@ const defaultWorkCode = runPrettier(`function transform($, sourceCode) {
   return $(sourceCode).replace('const a = $_$', 'const a = 2').generate();
 }`);
 const defaultInputCode = runPrettier(`const a = 1;const b = 2`);
+
+const defaultInputLang = 'typescript';
+
+const defaultHashState = {
+  inputCode: defaultInputCode,
+  workCode: defaultWorkCode,
+  inputLang: defaultInputLang,
+};
 
 const INPUT_LANG_LIST = [
   {
@@ -39,13 +47,10 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
 
   const [inputCode, setInputCode] = useState(defaultInputCode);
   const [workCode, setWorkCode] = useState(defaultWorkCode);
-  const [inputLang, setInputLang] = useState('typescript');
+  const [inputLang, setInputLang] = useState(defaultInputLang);
 
-  const [hashState, setHashState] = useHashState({
-    inputCode: defaultInputCode,
-    workCode: defaultWorkCode,
-    inputLang: 'typescript',
-  });
+  const [hashState, setHashState] = useHashState(defaultHashState);
+  const [, setHash] = useHash();
 
   useEffect(() => {
     setInputCode(hashState.inputCode);
@@ -67,20 +72,23 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     setWorkCode(defaultWorkCode);
     setInputCode(defaultInputCode);
     setInputLang('typescript');
+    setHash('');
+  };
+
+  const shareCode = () => {
+    setHashState({
+      inputCode,
+      workCode,
+      inputLang,
+    });
+    const sucess = copy(window.location.href);
+    if (sucess) {
+      message.success('URL 已生成并拷贝到剪贴板', 2);
+    }
   };
 
   useImperativeHandle(ref, () => ({
-    shareCode: () => {
-      setHashState({
-        inputCode,
-        workCode,
-        inputLang,
-      });
-      const sucess = copy(window.location.href);
-      if (sucess) {
-        message.success('URL 已生成并拷贝到剪贴板', 3);
-      }
-    },
+    shareCode,
   }));
 
   return (
@@ -106,7 +114,12 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
                   />
                 </div>
               </div>
-              <BaseEditor code={inputCode} onChange={setInputCode} language={inputLang} />
+              <BaseEditor
+                code={inputCode}
+                onChange={setInputCode}
+                language={inputLang}
+                onSave={shareCode}
+              />
             </div>
           )}
           <div className="h-full flex-1">
@@ -126,7 +139,15 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
                 </Button>
               </div>
             </div>
-            <BaseEditor code={workCode} onChange={setWorkCode} language="javascript" />
+            <BaseEditor
+              code={workCode}
+              onChange={setWorkCode}
+              language="javascript"
+              onSave={() => {
+                setWorkCode(runPrettier(workCode));
+                shareCode();
+              }}
+            />
           </div>
         </SplitPane>
         <div className="h-full w-full">
