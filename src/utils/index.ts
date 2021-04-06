@@ -1,5 +1,6 @@
 import $ from 'gogocode';
 import prettier from 'prettier/standalone';
+import parserTypeScript from 'prettier/parser-typescript';
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
 
@@ -21,7 +22,7 @@ export function runPrettier(sourceCode: string) {
       semi: false,
       singleQuote: true,
       printWidth: 40,
-      plugins: [parserBabel, parserHtml],
+      plugins: [parserTypeScript, parserBabel, parserHtml],
     });
   } catch (error) {
     return error.toString();

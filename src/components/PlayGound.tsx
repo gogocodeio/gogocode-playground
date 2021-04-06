@@ -1,7 +1,7 @@
 import { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
-import { useHash, useWindowSize } from 'react-use';
+import { useLocation, useWindowSize } from 'react-use';
 import { runPrettier, runGoGoCode } from '../utils/index';
 
 import BaseEditor from './BaseEditor';
@@ -50,7 +50,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const [inputLang, setInputLang] = useState(defaultInputLang);
 
   const [hashState, setHashState] = useHashState(defaultHashState);
-  const [, setHash] = useHash();
+  const location = useLocation();
 
   useEffect(() => {
     setInputCode(hashState.inputCode);
@@ -69,10 +69,10 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   }, [hasPrettier, transformedCode]);
 
   const reset = () => {
-    setWorkCode(defaultWorkCode);
     setInputCode(defaultInputCode);
-    setInputLang('typescript');
-    setHash('');
+    setWorkCode(defaultWorkCode);
+    setInputLang(defaultInputLang);
+    window.history.pushState('', document.title, location.pathname || '' + location.search);
   };
 
   const shareCode = () => {

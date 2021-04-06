@@ -1,16 +1,20 @@
 import LZString from 'lz-string';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useHash } from 'react-use';
 
-export function getStateFromHash(hash: string) {
+export function getStateFromHash<T>(hash: string, defaultState?: T) {
   const codeHash = hash.replace(/^#code\//, '');
-  if (!hash) {
-    return {};
+  if (!codeHash) {
+    return defaultState ?? {};
   }
   try {
-    return JSON.parse(LZString.decompressFromEncodedURIComponent(codeHash) || '{}');
+    const state = JSON.parse(LZString.decompressFromEncodedURIComponent(codeHash) || '');
+    if (!Object.keys(state).length) {
+      return defaultState ?? {};
+    }
+    return state;
   } catch (_) {
-    return {};
+    return defaultState ?? {};
   }
 }
 
@@ -21,14 +25,8 @@ export function getHashFromState<T>(code: T) {
 
 export function useHashState<T>(defaultState: T) {
   const [hash, setHash] = useHash();
-  const hashState: T = useMemo(() => getStateFromHash(hash), [hash]);
-  const [state, _setState] = useState(defaultState);
-
-  useEffect(() => {
-    if (hash !== '') {
-      _setState(hashState);
-    }
-  }, [_setState, hashState, hash]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const state: T = useMemo(() => getStateFromHash(hash, defaultState), [hash]);
 
   const setState = useCallback(
     (newState: T) => {
