@@ -1,19 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import clsx from 'clsx';
-import { useLocalStorageState } from 'ahooks';
-import useWindowSize from '../hooks/useWindowSize';
+import copy from 'copy-to-clipboard';
+import { useWindowSize } from 'react-use';
 import { runPrettier, runGoGoCode } from '../utils/index';
 
 import BaseEditor from './BaseEditor';
 import DiffEditor from './DiffEditor';
 import SplitPane from 'react-split-pane';
-import { Switch, Button, Select } from 'antd';
+import { Switch, Button, Select, message } from 'antd';
+import { useHashState } from '../hooks/useHashState';
 
 const defaultWorkCode = runPrettier(`function transform($, sourceCode) {
   // 在这里返回你生成的代码
   return $(sourceCode).replace('const a = $_$', 'const a = 2').generate();
 }`);
-const defaultCode1 = runPrettier(`const a = 1;const b = 2`);
+const defaultInputCode = runPrettier(`const a = 1;const b = 2`);
 
 const INPUT_LANG_LIST = [
   {
@@ -30,34 +31,58 @@ const INPUT_LANG_LIST = [
   },
 ];
 
-export default function PlayGround(props: { className?: string }) {
+export default forwardRef(function PlayGround(props: { className?: string }, ref) {
   const hasSourceCode = true;
+  const { width: winWidth, height: winHeight } = useWindowSize();
+
   const [hasPrettier, setHasPrettier] = useState(true);
-  const [workCode = defaultWorkCode, setWorkCode] = useLocalStorageState(
-    'transformCode',
-    defaultWorkCode,
-  );
-  const [code1 = defaultCode1, setCode1] = useLocalStorageState('inputCode', defaultCode1);
 
-  const code2 = useMemo(() => runGoGoCode(code1, workCode), [code1, workCode]);
+  const [inputCode, setInputCode] = useState(defaultInputCode);
+  const [workCode, setWorkCode] = useState(defaultWorkCode);
+  const [inputLang, setInputLang] = useState('typescript');
 
-  const code1ToShow = useMemo(() => {
-    return hasPrettier ? runPrettier(code1) : code1;
-  }, [hasPrettier, code1]);
+  const [hashState, setHashState] = useHashState({
+    inputCode: defaultInputCode,
+    workCode: defaultWorkCode,
+    inputLang: 'typescript',
+  });
 
-  const code2ToShow = useMemo(() => {
-    return hasPrettier ? runPrettier(code2) : code2;
-  }, [hasPrettier, code2]);
+  useEffect(() => {
+    setInputCode(hashState.inputCode);
+    setWorkCode(hashState.workCode);
+    setInputLang(hashState.inputLang);
+  }, [hashState]);
 
-  const [inputLang = 'typescript', setInputLang] = useLocalStorageState('inputLang', 'typescript');
+  const transformedCode = useMemo(() => runGoGoCode(inputCode, workCode), [inputCode, workCode]);
+
+  const prettierInputCode = useMemo(() => {
+    return hasPrettier ? runPrettier(inputCode) : inputCode;
+  }, [hasPrettier, inputCode]);
+
+  const prettierTranformedCode = useMemo(() => {
+    return hasPrettier ? runPrettier(transformedCode) : transformedCode;
+  }, [hasPrettier, transformedCode]);
 
   const reset = () => {
     setWorkCode(defaultWorkCode);
-    setCode1(defaultCode1);
+    setInputCode(defaultInputCode);
     setInputLang('typescript');
   };
 
-  const { width: winWidth, height: winHeight } = useWindowSize();
+  useImperativeHandle(ref, () => ({
+    shareCode: () => {
+      setHashState({
+        inputCode,
+        workCode,
+        inputLang,
+      });
+      const sucess = copy(window.location.href);
+      if (sucess) {
+        message.success('URL 已生成并拷贝到剪贴板', 3);
+      }
+    },
+  }));
+
   return (
     <div className={clsx(props.className, 'relative')}>
       <SplitPane split="horizontal" defaultSize="55%" minSize={100} maxSize={winHeight - 130}>
@@ -81,7 +106,7 @@ export default function PlayGround(props: { className?: string }) {
                   />
                 </div>
               </div>
-              <BaseEditor code={code1} onChange={setCode1} language={inputLang} />
+              <BaseEditor code={inputCode} onChange={setInputCode} language={inputLang} />
             </div>
           )}
           <div className="h-full flex-1">
@@ -116,9 +141,13 @@ export default function PlayGround(props: { className?: string }) {
               />
             </div>
           </div>
-          <DiffEditor code1={code1ToShow} code2={code2ToShow} language={inputLang} />
+          <DiffEditor
+            code1={prettierInputCode}
+            code2={prettierTranformedCode}
+            language={inputLang}
+          />
         </div>
       </SplitPane>
     </div>
   );
-}
+});
