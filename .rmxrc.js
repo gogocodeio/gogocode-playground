@@ -30,7 +30,7 @@ module.exports = {
       )(config, env);
     },
   },
-  // unstable_env: {
-  //   FAST_REFRESH: false
-  // }
+  unstable_env: {
+    GENERATE_SOURCEMAP: false
+  }
 };
