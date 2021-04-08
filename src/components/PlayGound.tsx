@@ -10,18 +10,23 @@ import SplitPane from 'react-split-pane';
 import { Switch, Button, Select, message } from 'antd';
 import { useHashState } from '../hooks/useHashState';
 
-const defaultWorkCode = runPrettier(`function transform($, sourceCode) {
+const defaultWorkCode = runPrettier(
+  `function transform($, sourceCode) {
   // 在这里返回你生成的代码
   return $(sourceCode).replace('const a = $_$', 'const a = 2').generate();
-}`);
-const defaultInputCode = runPrettier(`const a = 1;const b = 2`);
+}`,
+  'javascript',
+);
+const defaultInputCode = runPrettier(`const a = 1;const b = 2`, 'javascript');
 
 const defaultInputLang = 'typescript';
+const defaultHasPrettier = true;
 
 const defaultHashState = {
   inputCode: defaultInputCode,
   workCode: defaultWorkCode,
   inputLang: defaultInputLang,
+  hasPrettier: defaultHasPrettier,
 };
 
 const INPUT_LANG_LIST = [
@@ -35,7 +40,7 @@ const INPUT_LANG_LIST = [
   },
   {
     value: 'html',
-    label: 'HTML',
+    label: 'HTML/Vue',
   },
 ];
 
@@ -43,7 +48,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const hasSourceCode = true;
   const { width: winWidth, height: winHeight } = useWindowSize();
 
-  const [hasPrettier, setHasPrettier] = useState(true);
+  const [hasPrettier, setHasPrettier] = useState(defaultHasPrettier);
 
   const [inputCode, setInputCode] = useState(defaultInputCode);
   const [workCode, setWorkCode] = useState(defaultWorkCode);
@@ -52,21 +57,15 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const [hashState, setHashState] = useHashState(defaultHashState);
   const location = useLocation();
 
-  useEffect(() => {
-    setInputCode(hashState.inputCode);
-    setWorkCode(hashState.workCode);
-    setInputLang(hashState.inputLang);
-  }, [hashState]);
-
   const transformedCode = useMemo(() => runGoGoCode(inputCode, workCode), [inputCode, workCode]);
 
   const prettierInputCode = useMemo(() => {
-    return hasPrettier ? runPrettier(inputCode) : inputCode;
-  }, [hasPrettier, inputCode]);
+    return hasPrettier ? runPrettier(inputCode, inputLang) : inputCode;
+  }, [hasPrettier, inputCode, inputLang]);
 
   const prettierTranformedCode = useMemo(() => {
-    return hasPrettier ? runPrettier(transformedCode) : transformedCode;
-  }, [hasPrettier, transformedCode]);
+    return hasPrettier ? runPrettier(transformedCode, inputLang) : transformedCode;
+  }, [hasPrettier, transformedCode, inputLang]);
 
   const reset = () => {
     setInputCode(defaultInputCode);
@@ -75,11 +74,19 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     window.history.pushState('', document.title, location.pathname || '' + location.search);
   };
 
+  useEffect(() => {
+    setInputCode(hashState.inputCode);
+    setWorkCode(hashState.workCode);
+    setInputLang(hashState.inputLang);
+    setHasPrettier(hashState.hasPrettier);
+  }, [hashState]);
+
   const shareCode = () => {
     setHashState({
       inputCode,
       workCode,
       inputLang,
+      hasPrettier,
     });
     const sucess = copy(window.location.href);
     if (sucess) {
@@ -132,7 +139,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
                 <Button
                   type="link"
                   onClick={() => {
-                    setWorkCode(runPrettier(workCode));
+                    setWorkCode(runPrettier(workCode, 'javascript'));
                   }}
                 >
                   格式化
@@ -144,7 +151,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
               onChange={setWorkCode}
               language="javascript"
               onSave={() => {
-                setWorkCode(runPrettier(workCode));
+                setWorkCode(runPrettier(workCode, 'javascript'));
                 shareCode();
               }}
             />

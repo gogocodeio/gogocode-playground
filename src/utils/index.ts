@@ -14,17 +14,25 @@ export function runGoGoCode(sourceCode: string, workCode: string) {
   }
 }
 
-export function runPrettier(sourceCode: string) {
+export function runPrettier(sourceCode: string, lang: string) {
+  const preserMap: any = {
+    javascript: 'babel',
+    typescript: 'typescript',
+    html: 'vue',
+  };
   try {
     return prettier.format(sourceCode, {
       trailingComma: 'es5',
       tabWidth: 2,
       semi: false,
       singleQuote: true,
-      printWidth: 40,
+      printWidth: 30,
+      parser: preserMap[lang] || 'typescript',
       plugins: [parserTypeScript, parserBabel, parserHtml],
     });
   } catch (error) {
-    return error.toString();
+    return `/** prettier format failed, original file below: ${error} */
+${sourceCode}
+    `;
   }
 }
