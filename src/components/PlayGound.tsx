@@ -3,31 +3,15 @@ import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
 import { useLocation, useWindowSize } from 'react-use';
 import { runPrettier, runGoGoCode } from '../utils/index';
-
+import { VSCodeContainer } from '../context';
 import BaseEditor from './BaseEditor';
 import DiffEditor from './DiffEditor';
 import SplitPane from 'react-split-pane';
 import { Switch, Button, Select, message } from 'antd';
 import { useHashState } from '../hooks/useHashState';
 
-const defaultWorkCode = runPrettier(
-  `function transform($, sourceCode) {
-  // 在这里返回你生成的代码
-  return $(sourceCode).replace('const a = $_$', 'const a = 2').generate();
-}`,
-  'javascript',
-);
-const defaultInputCode = runPrettier(`const a = 1;const b = 2`, 'javascript');
-
 const defaultInputLang = 'typescript';
 const defaultHasPrettier = true;
-
-const defaultHashState = {
-  inputCode: defaultInputCode,
-  workCode: defaultWorkCode,
-  inputLang: defaultInputLang,
-  hasPrettier: defaultHasPrettier,
-};
 
 const INPUT_LANG_LIST = [
   {
@@ -45,7 +29,51 @@ const INPUT_LANG_LIST = [
 ];
 
 export default forwardRef(function PlayGround(props: { className?: string }, ref) {
-  const hasSourceCode = false;
+  const {
+    isInVsCode,
+    currentPath,
+    currentContent,
+    setCurrentPath,
+    replaceOne: _replaceOne,
+  } = VSCodeContainer.useContainer();
+  const hasSourceCode = !isInVsCode;
+
+  const defaultWorkCode = isInVsCode
+    ? runPrettier(
+        `function transform(fileInfo, api, options) {
+          const $ = api.gogocode;
+          const source = fileInfo.source;
+          // 在这里返回你生成的代码
+          return $(source).replace('const a = $_$', 'const a = 2').generate();
+        }`,
+        'javascript',
+        70,
+      )
+    : runPrettier(
+        `function transform(fileInfo, api, options) {
+          const $ = api.gogocode;
+          const source = fileInfo.source;
+          // 在这里返回你生成的代码
+          return $(source).replace('const a = $_$', 'const a = 2').generate();
+        }`,
+        'javascript',
+        70,
+      );
+  const defaultInputCode = isInVsCode
+    ? runPrettier(
+        `// 请右键选择要转换的文件，点击菜单中的用 GoGoCode 转换
+        const a = 1;const b = 2;`,
+        'javascript',
+      )
+    : runPrettier(`const a = 1;const b = 2`, 'javascript');
+
+  const defaultHashState = {
+    inputCode: defaultInputCode,
+    workCode: defaultWorkCode,
+    inputLang: defaultInputLang,
+    hasPrettier: defaultHasPrettier,
+  };
+
   const { width: winWidth, height: winHeight } = useWindowSize();
 
   const [hasPrettier, setHasPrettier] = useState(defaultHasPrettier);
@@ -57,7 +85,11 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const [hashState, setHashState] = useHashState(defaultHashState);
   const location = useLocation();
 
-  const transformedCode = useMemo(() => runGoGoCode(inputCode, workCode), [inputCode, workCode]);
+  const transformedCode = useMemo(() => runGoGoCode(inputCode, workCode, currentPath), [
+    inputCode,
+    workCode,
+    currentPath,
+  ]);
 
   const prettierInputCode = useMemo(() => {
     return hasPrettier ? runPrettier(inputCode, inputLang) : inputCode;
@@ -67,19 +99,26 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     return hasPrettier ? runPrettier(transformedCode, inputLang) : transformedCode;
   }, [hasPrettier, transformedCode, inputLang]);
 
-  const reset = () => {
-    setInputCode(defaultInputCode);
-    setWorkCode(defaultWorkCode);
-    setInputLang(defaultInputLang);
-    window.history.pushState('', document.title, location.pathname || '' + location.search);
-  };
-
   useEffect(() => {
     setInputCode(hashState.inputCode);
     setWorkCode(hashState.workCode);
     setInputLang(hashState.inputLang);
     setHasPrettier(hashState.hasPrettier);
   }, [hashState]);
+
+  useEffect(() => {
+    if (currentContent) {
+      setInputCode(currentContent);
+    }
+  }, [currentContent]);
+
+  const reset = () => {
+    setInputCode(defaultInputCode);
+    setWorkCode(defaultWorkCode);
+    setInputLang(defaultInputLang);
+    window.history.pushState('', document.title, location.pathname || '' + location.search);
+    isInVsCode && setCurrentPath('');
+  };
 
   const shareCode = () => {
     setHashState({
@@ -88,14 +127,26 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
       inputLang,
       hasPrettier,
     });
-    const sucess = copy(window.location.href);
+    const link = isInVsCode
+      ? `https://play.gogocode.io/${window.location.hash}`
+      : window.location.href;
+    const sucess = copy(link);
     if (sucess) {
       message.success('URL 已生成并拷贝到剪贴板', 2);
     }
   };
 
+  const replaceOne = () => {
+    if (!currentPath) {
+      message.error('请先选择文件进行转换', 2);
+      return;
+    }
+    _replaceOne(currentPath, transformedCode);
+  };
+
   useImperativeHandle(ref, () => ({
     shareCode,
+    replaceOne,
   }));
 
   const InputCodePane = (
@@ -125,13 +176,13 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
       <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
         <div>转换代码(JavaScript)</div>
         <div>
-          <Button type="link" className="mr5" onClick={reset}>
+          <Button type="link" onClick={reset}>
             重置代码
           </Button>
           <Button
             type="link"
             onClick={() => {
-              setWorkCode(runPrettier(workCode, 'javascript'));
+              setWorkCode(runPrettier(workCode, 'javascript', 70));
             }}
           >
             格式化
@@ -143,7 +194,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
         onChange={setWorkCode}
         language="javascript"
         onSave={() => {
-          setWorkCode(runPrettier(workCode, 'javascript'));
+          setWorkCode(runPrettier(workCode, 'javascript', 70));
           shareCode();
         }}
       />
@@ -170,14 +221,27 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
 
         <div className="h-full w-full">
           <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
-            <div>转换结果对比</div>
-            <div>
+            <div className="flex">
+              <div className="mr-5">输入文件</div>
+              {currentPath && <span>{currentPath}</span>}
+            </div>
+            <div className="flex items-center">
+              {isInVsCode && (
+                <Select
+                  options={INPUT_LANG_LIST}
+                  value={inputLang}
+                  onSelect={setInputLang}
+                  className="w-32 mr-5"
+                />
+              )}
               <Switch
+                className="mr-5"
                 checkedChildren="格式化"
                 unCheckedChildren="格式化"
                 checked={hasPrettier}
                 onChange={setHasPrettier}
               />
+              <div>输出文件</div>
             </div>
           </div>
           <DiffEditor
