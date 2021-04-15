@@ -98,65 +98,76 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     shareCode,
   }));
 
+  const InputCodePane = (
+    <div className="h-full flex-1">
+      <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
+        <div>待转换代码</div>
+        <div>
+          <Select
+            options={INPUT_LANG_LIST}
+            value={inputLang}
+            onSelect={setInputLang}
+            className="w-32"
+          />
+        </div>
+      </div>
+      <BaseEditor
+        code={inputCode}
+        onChange={setInputCode}
+        language={inputLang}
+        onSave={shareCode}
+      />
+    </div>
+  );
+
+  const workCodePane = (
+    <div className="h-full flex-1">
+      <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
+        <div>转换代码(JavaScript)</div>
+        <div>
+          <Button type="link" className="mr5" onClick={reset}>
+            重置代码
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setWorkCode(runPrettier(workCode, 'javascript'));
+            }}
+          >
+            格式化
+          </Button>
+        </div>
+      </div>
+      <BaseEditor
+        code={workCode}
+        onChange={setWorkCode}
+        language="javascript"
+        onSave={() => {
+          setWorkCode(runPrettier(workCode, 'javascript'));
+          shareCode();
+        }}
+      />
+    </div>
+  );
+
   return (
     <div className={clsx(props.className, 'relative')}>
       <SplitPane split="horizontal" defaultSize="55%" minSize={100} maxSize={winHeight - 130}>
-        <SplitPane
-          className="h-full w-full"
-          split="vertical"
-          defaultSize={hasSourceCode ? '49%' : '100%'}
-          minSize={100}
-          maxSize={winWidth - 100}
-        >
-          {hasSourceCode && (
-            <div className="h-full flex-1">
-              <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
-                <div>待转换代码</div>
-                <div>
-                  <Select
-                    options={INPUT_LANG_LIST}
-                    value={inputLang}
-                    onSelect={setInputLang}
-                    className="w-32"
-                  />
-                </div>
-              </div>
-              <BaseEditor
-                code={inputCode}
-                onChange={setInputCode}
-                language={inputLang}
-                onSave={shareCode}
-              />
-            </div>
-          )}
-          <div className="h-full flex-1">
-            <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
-              <div>转换代码(JavaScript)</div>
-              <div>
-                <Button type="link" className="mr5" onClick={reset}>
-                  重置代码
-                </Button>
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setWorkCode(runPrettier(workCode, 'javascript'));
-                  }}
-                >
-                  格式化
-                </Button>
-              </div>
-            </div>
-            <BaseEditor
-              code={workCode}
-              onChange={setWorkCode}
-              language="javascript"
-              onSave={() => {
-                setWorkCode(runPrettier(workCode, 'javascript'));
-                shareCode();
-              }}
-            />
-          </div>
-        </SplitPane>
+        {hasSourceCode ? (
+          <SplitPane
+            className="h-full w-full"
+            split="vertical"
+            defaultSize={hasSourceCode ? '49%' : '100%'}
+            minSize={100}
+            maxSize={winWidth - 100}
+          >
+            {InputCodePane}
+            {workCodePane}
+          </SplitPane>
+        ) : (
+          <div className="h-full w-full">{workCodePane}</div>
+        )}
+
         <div className="h-full w-full">
           <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
             <div>转换结果对比</div>
