@@ -45,7 +45,7 @@ const INPUT_LANG_LIST = [
 ];
 
 export default forwardRef(function PlayGround(props: { className?: string }, ref) {
-  const hasSourceCode = true;
+  const hasSourceCode = false;
   const { width: winWidth, height: winHeight } = useWindowSize();
 
   const [hasPrettier, setHasPrettier] = useState(defaultHasPrettier);
