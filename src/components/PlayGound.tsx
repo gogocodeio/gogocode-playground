@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
 import { useLocation, useWindowSize } from 'react-use';
 import { runPrettier, runGoGoCode } from '../utils/index';
-import { VSCodeContainer } from '../context';
+import { VSCodeContainer } from '../vscode-container';
 import BaseEditor from './BaseEditor';
 import DiffEditor from './DiffEditor';
 import SplitPane from 'react-split-pane';

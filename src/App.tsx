@@ -4,7 +4,7 @@ import GithubStar from './components/GithubStar';
 import clsx from 'clsx';
 import { useRef } from 'react';
 import { Button } from 'antd';
-import { VSCodeContainer } from './context';
+import { VSCodeContainer } from './vscode-container';
 
 function Header(props: { className?: string; onShare: () => void; onReplaceOne: () => void }) {
   const { isInVsCode } = VSCodeContainer.useContainer();
