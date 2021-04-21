@@ -150,7 +150,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   }));
 
   const InputCodePane = (
-    <div className="h-full flex-1">
+    <div className="h-full">
       <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
         <div>待转换代码</div>
         <div>
@@ -172,7 +172,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   );
 
   const workCodePane = (
-    <div className="h-full flex-1">
+    <div className="h-full">
       <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
         <div>转换代码(JavaScript)</div>
         <div>
@@ -209,8 +209,8 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
             className="h-full w-full"
             split="vertical"
             defaultSize={hasSourceCode ? '49%' : '100%'}
-            minSize={100}
-            maxSize={winWidth - 100}
+            minSize={300}
+            maxSize={winWidth - 300}
           >
             {InputCodePane}
             {workCodePane}
