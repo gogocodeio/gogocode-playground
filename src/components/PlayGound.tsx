@@ -12,6 +12,7 @@ import { useHashState } from '../hooks/useHashState';
 
 const defaultInputLang = 'typescript';
 const defaultHasPrettier = true;
+const defaultCompareOutput = true;
 
 const INPUT_LANG_LIST = [
   {
@@ -72,11 +73,13 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     workCode: defaultWorkCode,
     inputLang: defaultInputLang,
     hasPrettier: defaultHasPrettier,
+    compareOutput: defaultCompareOutput,
   };
 
   const { width: winWidth, height: winHeight } = useWindowSize();
 
   const [hasPrettier, setHasPrettier] = useState(defaultHasPrettier);
+  const [compareOutput, setCompareOutput] = useState(defaultCompareOutput);
 
   const [inputCode, setInputCode] = useState(defaultInputCode);
   const [workCode, setWorkCode] = useState(defaultWorkCode);
@@ -104,6 +107,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     setWorkCode(hashState.workCode);
     setInputLang(hashState.inputLang);
     setHasPrettier(hashState.hasPrettier);
+    setCompareOutput(hashState.compareOutput);
   }, [hashState]);
 
   useEffect(() => {
@@ -126,6 +130,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
       workCode,
       inputLang,
       hasPrettier,
+      compareOutput,
     });
     const link = isInVsCode
       ? `https://play.gogocode.io/${window.location.hash}`
@@ -222,7 +227,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
         <div className="h-full w-full">
           <div className="bg-dark flex justify-between px-6 py-2 text-white border-gray-800 border-t">
             <div className="flex">
-              <div className="mr-5">输入文件</div>
+              <div className="mr-5">{compareOutput ? '输入文件' : '输出文件'}</div>
               {currentPath && <span>{currentPath}</span>}
             </div>
             <div className="flex items-center">
@@ -235,20 +240,31 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
                 />
               )}
               <Switch
-                className="mr-5"
+                className="mr-3"
+                checkedChildren="对比"
+                unCheckedChildren="对比"
+                checked={compareOutput}
+                onChange={setCompareOutput}
+              />
+
+              <Switch
                 checkedChildren="格式化"
                 unCheckedChildren="格式化"
                 checked={hasPrettier}
                 onChange={setHasPrettier}
               />
-              <div>输出文件</div>
+              {compareOutput && <div className="ml-5">输出文件</div>}
             </div>
           </div>
-          <DiffEditor
-            code1={prettierInputCode}
-            code2={prettierTranformedCode}
-            language={inputLang}
-          />
+          {compareOutput ? (
+            <DiffEditor
+              code1={prettierInputCode}
+              code2={prettierTranformedCode}
+              language={inputLang}
+            />
+          ) : (
+            <BaseEditor code={prettierTranformedCode} readOnly={true} language={inputLang} />
+          )}
         </div>
       </SplitPane>
     </div>

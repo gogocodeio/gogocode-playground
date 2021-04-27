@@ -7,13 +7,14 @@ type Editor = monacoEditor.editor.IStandaloneCodeEditor;
 
 interface Props {
   code: string;
-  onChange: (code: string) => void;
+  onChange?: (code: string) => void;
   language: string;
   onSave?: () => void;
+  readOnly?: boolean;
 }
 
 function BaseEditor(props: Props) {
-  const { language, code, onChange, onSave = () => {} } = props;
+  const { language, code, onChange = () => {}, onSave = () => {}, readOnly = false } = props;
   const editorRef = useRef<Editor>();
   const { width, height, ref } = useResizeDetector();
 
@@ -36,6 +37,7 @@ function BaseEditor(props: Props) {
           minimap: {
             enabled: false,
           },
+          readOnly,
         }}
         onChange={onChange}
         editorDidMount={(editor: Editor) => {

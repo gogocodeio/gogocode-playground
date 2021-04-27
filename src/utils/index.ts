@@ -3,12 +3,17 @@ import prettier from 'prettier/standalone';
 import parserTypeScript from 'prettier/parser-typescript';
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
+import { parse, stringify } from 'flatted';
 
 export function runGoGoCode(sourceCode: string, workCode: string, sourceCodePath: string = '') {
   try {
     // eslint-disable-next-line no-new-func
     const func = new Function('return ' + workCode)();
-    return func({ source: sourceCode, path: sourceCodePath }, { gogocode }, {});
+    return func(
+      { source: sourceCode, path: sourceCodePath },
+      { gogocode, parse, stringify },
+      {},
+    ).toString();
   } catch (e) {
     return '/**\n出错了！\n' + e + '\n**/';
   }
