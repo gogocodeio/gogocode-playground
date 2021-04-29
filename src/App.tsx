@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { useRef } from 'react';
 import { Button } from 'antd';
 import { VSCodeContainer } from './vscode-container';
+import gogocodeMeta from 'gogocode/package.json'
 
 function Header(props: { className?: string; onShare: () => void; onReplaceOne: () => void }) {
   const { isInVsCode } = VSCodeContainer.useContainer();
@@ -23,7 +24,7 @@ function Header(props: { className?: string; onShare: () => void; onReplaceOne: 
       </div>
       <div className="text-base text-white flex items-center">
         <a className="mr-5" href="https://gogocode.io" target="_blank" rel="noopener noreferrer">
-          GoGoCode.io
+          GoGoCode@{gogocodeMeta.version}
         </a>
         <GithubStar />
       </div>

@@ -5181,11 +5181,7 @@ flat-cache@^3.0.4:
     flatted "^3.1.0"
     rimraf "^3.0.2"
 
-flatted@^3.1.0:
-  version "3.1.1"
-  resolved "https://registry.npm.alibaba-inc.com/flatted/download/flatted-3.1.1.tgz#c4b489e80096d9df1dfc97c79871aea7c617c469"
-
-flatted@^3.1.1:
+flatted@^3.1.0, flatted@^3.1.1:
   version "3.1.1"
   resolved "https://r.cnpmjs.org/flatted/download/flatted-3.1.1.tgz#c4b489e80096d9df1dfc97c79871aea7c617c469"
 
@@ -5576,9 +5572,9 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
-gogocode@^0.2.15:
-  version "0.2.15"
-  resolved "https://r.cnpmjs.org/gogocode/download/gogocode-0.2.15.tgz#7ecd11e9c4d4d2418a6eef1ca47c2f3a1639e607"
+gogocode@^0.2.17:
+  version "0.2.17"
+  resolved "https://r.cnpmjs.org/gogocode/download/gogocode-0.2.17.tgz#975b28701d6e3f7acf19fd10f9abe4254de12fc9"
   dependencies:
     "@babel/parser" "^7.7.7"
     glob "^7.1.6"
