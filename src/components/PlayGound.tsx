@@ -39,34 +39,42 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   } = VSCodeContainer.useContainer();
   const hasSourceCode = !isInVsCode;
 
-  const defaultWorkCode = isInVsCode
-    ? runPrettier(
-        `function transform(fileInfo, api, options) {
+  const defaultWorkCode = useMemo(
+    () =>
+      isInVsCode
+        ? runPrettier(
+            `function transform(fileInfo, api, options) {
           const $ = api.gogocode;
           const source = fileInfo.source;
           // 在这里返回你生成的代码
           return $(source).replace('const a = $_$', 'const a = 2').generate();
         }`,
-        'javascript',
-        70,
-      )
-    : runPrettier(
-        `function transform(fileInfo, api, options) {
+            'javascript',
+            70,
+          )
+        : runPrettier(
+            `function transform(fileInfo, api, options) {
           const $ = api.gogocode;
           const source = fileInfo.source;
           // 在这里返回你生成的代码
           return $(source).replace('const a = $_$', 'const a = 2').generate();
         }`,
-        'javascript',
-        70,
-      );
-  const defaultInputCode = isInVsCode
-    ? runPrettier(
-        `// 请右键选择要转换的文件，点击菜单中的用 GoGoCode 转换
+            'javascript',
+            70,
+          ),
+    [isInVsCode],
+  );
+  const defaultInputCode = useMemo(
+    () =>
+      isInVsCode
+        ? runPrettier(
+            `// 请右键选择要转换的文件，点击菜单中的用 GoGoCode 转换
         const a = 1;const b = 2;`,
-        'javascript',
-      )
-    : runPrettier(`const a = 1;const b = 2`, 'javascript');
+            'javascript',
+          )
+        : runPrettier(`const a = 1;const b = 2`, 'javascript'),
+    [isInVsCode],
+  );
 
   const defaultHashState = {
     inputCode: defaultInputCode,
