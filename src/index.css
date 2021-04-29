@@ -5,3 +5,7 @@
 .Pane2.vertical {
   width: 0;
 }
+
+.Pane2.horizontal {
+  height: 0;
+}

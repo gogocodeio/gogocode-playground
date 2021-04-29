@@ -5,6 +5,8 @@ import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
 import { parse, stringify } from 'flatted';
 
+export function noop() {}
+
 export function runGoGoCode(sourceCode: string, workCode: string, sourceCodePath: string = '') {
   try {
     // eslint-disable-next-line no-new-func

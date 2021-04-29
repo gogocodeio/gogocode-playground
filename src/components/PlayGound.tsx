@@ -1,7 +1,7 @@
 import { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
-import { useLocation, useWindowSize } from 'react-use';
+import { useLocation, useWindowSize, useDebounce } from 'react-use';
 import { runPrettier, runGoGoCode } from '../utils/index';
 import { VSCodeContainer } from '../vscode-container';
 import BaseEditor from './BaseEditor';
@@ -88,11 +88,15 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const [hashState, setHashState] = useHashState(defaultHashState);
   const location = useLocation();
 
-  const transformedCode = useMemo(() => runGoGoCode(inputCode, workCode, currentPath), [
-    inputCode,
-    workCode,
-    currentPath,
-  ]);
+  const [transformedCode, setTransformedCode] = useState('');
+
+  useDebounce(
+    () => {
+      setTransformedCode(runGoGoCode(inputCode, workCode, currentPath));
+    },
+    200,
+    [inputCode, workCode, currentPath],
+  );
 
   const prettierInputCode = useMemo(() => {
     return hasPrettier ? runPrettier(inputCode, inputLang) : inputCode;
@@ -231,6 +235,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
               {currentPath && <span>{currentPath}</span>}
             </div>
             <div className="flex items-center">
+              {compareOutput && <div className="mr-5">输出文件</div>}
               {isInVsCode && (
                 <Select
                   options={INPUT_LANG_LIST}
@@ -253,7 +258,6 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
                 checked={hasPrettier}
                 onChange={setHasPrettier}
               />
-              {compareOutput && <div className="ml-5">输出文件</div>}
             </div>
           </div>
           {compareOutput ? (

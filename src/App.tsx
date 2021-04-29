@@ -35,7 +35,7 @@ function App() {
   const playground = useRef(null);
   return (
     <VSCodeContainer.Provider>
-      <div className="min-h-screen flex flex-col">
+      <div className="h-screen w-screen flex flex-col">
         <Header
           className="flex-none"
           onShare={() => {
