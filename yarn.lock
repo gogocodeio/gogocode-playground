@@ -5572,9 +5572,9 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
-gogocode@^0.2.20:
-  version "0.2.20"
-  resolved "https://r.cnpmjs.org/gogocode/download/gogocode-0.2.20.tgz#07e0506d643989c37707814ca185d27747a4cb69"
+gogocode@^0.2.24:
+  version "0.2.24"
+  resolved "https://r.cnpmjs.org/gogocode/download/gogocode-0.2.24.tgz#7a34add8448d57a7e502ffbe431492462c6dfea3"
   dependencies:
     "@babel/parser" "^7.7.7"
     glob "^7.1.6"
