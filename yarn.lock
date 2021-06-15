@@ -5572,13 +5572,14 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
-gogocode@^0.2.27:
-  version "0.2.27"
-  resolved "https://r.cnpmjs.org/gogocode/download/gogocode-0.2.27.tgz#3da13a82d38a73269c9b0d60b4f292e2fcc9a9e2"
+gogocode@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npm.alibaba-inc.com/gogocode/download/gogocode-1.0.1.tgz#fed208dc7436cee70db8e142ded08e570560529d"
+  integrity sha1-/tII3HQ2zucNuOFC3tCOVwVgUp0=
   dependencies:
     "@babel/parser" "^7.7.7"
     glob "^7.1.6"
-    hyntax-yx "^1.0.0"
+    hyntax-yx "^1.0.3"
     indent-string "^4.0.0"
     recast "^0.18.5"
     vue3-browser-compiler-yx "^1.0.1"
@@ -5936,9 +5937,10 @@ human-signals@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npm.alibaba-inc.com/human-signals/download/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
 
-hyntax-yx@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npm.alibaba-inc.com/hyntax-yx/download/hyntax-yx-1.0.0.tgz#fa5392753416bfbe9c5cc882fec9ae744bb68ccc"
+hyntax-yx@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npm.alibaba-inc.com/hyntax-yx/download/hyntax-yx-1.0.3.tgz#d776dd6d7af71a1fd2491bf1445950c5fa5c6095"
+  integrity sha1-13bdbXr3Gh/SSRvxRFlQxfpcYJU=
 
 hyphenate-style-name@^1.0.2:
   version "1.0.4"

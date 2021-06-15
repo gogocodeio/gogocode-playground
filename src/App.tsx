@@ -23,7 +23,7 @@ function Header(props: { className?: string; onShare: () => void; onReplaceOne: 
       </div>
       <div className="text-base text-white flex items-center">
         <a className="mr-5" href="https://gogocode.io" target="_blank" rel="noopener noreferrer">
-          GoGoCode@0.2.27
+          GoGoCode@1.0.1
         </a>
         <GithubStar />
       </div>
