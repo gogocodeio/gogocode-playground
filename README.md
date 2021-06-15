@@ -13,9 +13,13 @@
 
 `npm install -g yrm`
 
-切换成淘宝源加速安装：
+添加 tnpm 源：
 
-`yrm use taobao`
+`yrm add tnpm http://registry.npm.alibaba-inc.com/`
+
+使用 tnpm 源：
+
+`yrm use tnpm`
 
 安装依赖：
 
