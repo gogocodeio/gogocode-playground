@@ -1,13 +1,14 @@
 import './App.css';
 import PlayGound from './components/PlayGound';
 import GithubStar from './components/GithubStar';
+import Sidebar from './components/Sidebar';
 import clsx from 'clsx';
 import { useRef } from 'react';
 import { Button } from 'antd';
 import { VSCodeContainer } from './vscode-container';
 
-function Header(props: { className?: string; onShare: () => void; onReplaceOne: () => void }) {
-  const { isInVsCode } = VSCodeContainer.useContainer();
+function Header(props: { className?: string; onShare: () => void; onReplaceOne: () => void; onReplaceAll: () => void }) {
+  const { isInVsCode, treeData } = VSCodeContainer.useContainer();
   return (
     <div className={clsx(props.className, 'bg-dark flex justify-between px-6 py-4')}>
       <div className="flex items-center">
@@ -17,6 +18,13 @@ function Header(props: { className?: string; onShare: () => void; onReplaceOne: 
             Replace
           </Button>
         )}
+        {
+          isInVsCode && treeData.length > 0 && (
+            <Button size="large" className="mr-2" onClick={props.onReplaceAll}>
+              Replace All
+            </Button>
+          )
+        }
         <Button size="large" onClick={props.onShare}>
           Share
         </Button>
@@ -33,6 +41,7 @@ function Header(props: { className?: string; onShare: () => void; onReplaceOne: 
 
 function App() {
   const playground = useRef(null);
+  
   return (
     <VSCodeContainer.Provider>
       <div className="h-screen w-screen flex flex-col">
@@ -50,8 +59,17 @@ function App() {
               playground.current.replaceOne();
             }
           }}
+          onReplaceAll={() => {
+            if (playground.current) {
+              //@ts-ignore
+              playground.current.replaceAll();
+            }
+          }}
         />
-        <PlayGound className="flex-auto" ref={playground} />
+        <div className="flex h-full">
+          <Sidebar />
+          <PlayGound className="flex-auto" ref={playground} />
+        </div>
       </div>
     </VSCodeContainer.Provider>
   );

@@ -19,6 +19,7 @@ function useVSCode() {
   const [filePaths, setFilePaths] = useState([]);
   const [currentPath, _setCurrentPath] = useState('');
   const [currentContent, _setCurrentContent] = useState('');
+  const [treeData, setTreeData] = useState([]);
 
   useEffect(() => {
     if (!vscode && window.acquireVsCodeApi) {
@@ -43,6 +44,9 @@ function useVSCode() {
       case 'message':
         showMessage[message.type](message.content, message.duration);
         break;
+      case 'folder-paths':
+        setTreeData(message.treeData);
+        break;
       default:
         break;
     }
@@ -54,6 +58,7 @@ function useVSCode() {
 
   const setCurrentPath = useCallback(
     (path: string) => {
+      console.log(path)
       if (path) {
         postMessage({
           command: 'get-file-content',
@@ -78,6 +83,22 @@ function useVSCode() {
     [postMessage],
   );
 
+  const replaceAll = useCallback(
+    (treeData:any, transformCode: string) => {
+      if (treeData && treeData.length) {
+        postMessage({
+          command: 'replace-all',
+          treeData,
+          transformCode,
+        });
+      }
+    },
+    [postMessage],
+  );
+
+  const onSelect = (item) => {
+    setCurrentPath(item[0])
+  }
   return {
     isInVsCode,
     filePaths,
@@ -85,7 +106,12 @@ function useVSCode() {
     setCurrentPath,
     currentContent,
     replaceOne,
+    replaceAll,
+    treeData,
+    onSelect,
+    setTreeData
   };
 }
 
 export const VSCodeContainer = createContainer(useVSCode);
+

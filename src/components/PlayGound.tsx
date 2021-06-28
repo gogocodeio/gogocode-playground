@@ -35,7 +35,9 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     currentPath,
     currentContent,
     setCurrentPath,
+    treeData,
     replaceOne: _replaceOne,
+    replaceAll: _replaceAll
   } = VSCodeContainer.useContainer();
   const hasSourceCode = !isInVsCode;
 
@@ -161,9 +163,14 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     _replaceOne(currentPath, transformedCode);
   };
 
+  const replaceAll = () => {
+    _replaceAll(treeData, workCode);
+  };
+
   useImperativeHandle(ref, () => ({
     shareCode,
     replaceOne,
+    replaceAll
   }));
 
   const InputCodePane = (
