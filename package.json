@@ -59,8 +59,8 @@
     ]
   },
   "devDependencies": {
-    "@ali/craco-cli": "2.1.6-beta.2",
-    "@tailwindcss/postcss7-compat": "^2.0.4",
+    "@ali/craco-cli": "2.1.6-beta.3",
+    "@tailwindcss/postcss7-compat": "2.1.0",
     "babel-loader": "8.1.0",
     "monaco-editor-webpack-plugin": "^3.1.0",
     "raw-loader": "^4.0.2",
