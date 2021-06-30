@@ -8,7 +8,7 @@ declare global {
 }
 
 function useGoGoCode() {
-  const status = useScript(`https://unpkg.com/gogocode/umd/gogocode.min.js`);
+  const status = useScript(`https://unpkg.zhimg.com/gogocode/umd/gogocode.min.js`);
   // const status = useScript(`/gogocode.js`);
   return {
     status,
