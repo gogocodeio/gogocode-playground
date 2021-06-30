@@ -58,7 +58,7 @@ function useVSCode() {
 
   const setCurrentPath = useCallback(
     (path: string) => {
-      console.log(path)
+      console.log(path);
       if (path) {
         postMessage({
           command: 'get-file-content',
@@ -84,7 +84,7 @@ function useVSCode() {
   );
 
   const replaceAll = useCallback(
-    (treeData:any, transformCode: string) => {
+    (treeData: any, transformCode: string) => {
       if (treeData && treeData.length) {
         postMessage({
           command: 'replace-all',
@@ -96,9 +96,9 @@ function useVSCode() {
     [postMessage],
   );
 
-  const onSelect = (item) => {
-    setCurrentPath(item[0])
-  }
+  const onSelect = (item: any) => {
+    setCurrentPath(item[0]);
+  };
   return {
     isInVsCode,
     filePaths,
@@ -109,9 +109,8 @@ function useVSCode() {
     replaceAll,
     treeData,
     onSelect,
-    setTreeData
+    setTreeData,
   };
 }
 
 export const VSCodeContainer = createContainer(useVSCode);
-

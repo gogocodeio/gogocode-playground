@@ -4,6 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useLocation, useWindowSize, useDebounce } from 'react-use';
 import { runPrettier, runGoGoCode } from '../utils/index';
 import { VSCodeContainer } from '../vscode-container';
+import { GoGoCodeConatiner } from '../gogocode-container'
 import BaseEditor from './BaseEditor';
 import DiffEditor from './DiffEditor';
 import SplitPane from 'react-split-pane';
@@ -39,6 +40,8 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     replaceOne: _replaceOne,
     replaceAll: _replaceAll
   } = VSCodeContainer.useContainer();
+
+  const { gogocode } = GoGoCodeConatiner.useContainer()
   const hasSourceCode = !isInVsCode;
 
   const defaultWorkCode = useMemo(
@@ -102,7 +105,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
 
   useDebounce(
     () => {
-      setTransformedCode(runGoGoCode(inputCode, workCode, currentPath));
+      setTransformedCode(runGoGoCode(gogocode, inputCode, workCode, currentPath));
     },
     200,
     [inputCode, workCode, currentPath],

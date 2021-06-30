@@ -1,4 +1,3 @@
-import gogocode from 'gogocode';
 import prettier from 'prettier/standalone';
 import parserTypeScript from 'prettier/parser-typescript';
 import parserBabel from 'prettier/parser-babel';
@@ -7,7 +6,12 @@ import { parse, stringify } from 'flatted';
 
 export function noop() {}
 
-export function runGoGoCode(sourceCode: string, workCode: string, sourceCodePath: string = '') {
+export function runGoGoCode(
+  gogocode: () => any,
+  sourceCode: string,
+  workCode: string,
+  sourceCodePath: string = '',
+) {
   try {
     // eslint-disable-next-line no-new-func
     const func = new Function('return ' + workCode)();
