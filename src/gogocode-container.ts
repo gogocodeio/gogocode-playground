@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export function createWorkerQueue(Worker: any) {
+export function createWorkerQueue(Worker: any, version: string) {
   const worker = new Worker();
   const queue = new PQueue({ concurrency: 1 });
   return {
@@ -21,7 +21,7 @@ export function createWorkerQueue(Worker: any) {
       const _id = performance.now();
       worker.postMessage({
         _current: _id,
-        _importPath: `https://unpkg.antfin-inc.com/gogocode/umd/gogocode.js`,
+        _importPath: `https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`,
       });
       return queue.add(
         () =>
@@ -49,7 +49,7 @@ function useGoGoCode() {
   const gogocodeWorker = useRef<ReturnType<typeof createWorkerQueue>>();
 
   useEffect(() => {
-    fetch('https://unpkg.antfin-inc.com/gogocode/package.json')
+    fetch('https://unpkg.com/gogocode/package.json')
       .then((res) => res.json())
       .then((pkg) => {
         setVersion(pkg.version);
@@ -67,12 +67,15 @@ function useGoGoCode() {
       sourceCodePath: string = '',
       restartWorker: boolean = false,
     ) => {
+      if (!version) {
+        return '';
+      }
 
       if (restartWorker && gogocodeWorker.current) {
         gogocodeWorker.current.terminate()
-        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker);
+        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker, version);
       } else if (!gogocodeWorker.current) {
-        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker);
+        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker, version);
       }
 
       const worker = gogocodeWorker.current;
@@ -90,7 +93,7 @@ function useGoGoCode() {
       }
       return transformed as string;
     },
-    [],
+    [version],
   );
 
   return {
