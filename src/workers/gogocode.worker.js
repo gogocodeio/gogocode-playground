@@ -24,11 +24,7 @@ addEventListener('message', async (event) => {
 
   if (event.data._current) {
     current = event.data._current;
-    return;
-  }
-
-  if (event.data.importPath) {
-    importScripts(event.data.importPath);
+    importScripts(event.data._importPath);
     return;
   }
 

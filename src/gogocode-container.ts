@@ -19,9 +19,9 @@ export function createWorkerQueue(Worker: any, version: string) {
     emit(data: any) {
       queue.clear();
       const _id = performance.now();
-      worker.postMessage({ _current: _id });
       worker.postMessage({
-        importPath: `https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`,
+        _current: _id,
+        _importPath: `https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`,
       });
       return queue.add(
         () =>
