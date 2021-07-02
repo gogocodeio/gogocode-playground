@@ -144,6 +144,11 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     isInVsCode && setCurrentPath('');
   };
 
+  const restartWorker = async () => {
+    const transformed = await runGoGoCode(inputCode, workCode, currentPath, true);
+    setTransformedCode(transformed);
+  };
+
   const shareCode = () => {
     setHashState({
       inputCode,
@@ -216,6 +221,9 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
             }}
           >
             格式化
+          </Button>
+          <Button type="link" onClick={restartWorker}>
+            重启转换服务
           </Button>
         </div>
       </div>
