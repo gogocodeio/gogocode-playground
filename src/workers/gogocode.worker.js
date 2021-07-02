@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 // eslint-disable-next-line no-undef
-importScripts('gogocode.js');
+process.env.NODE_ENV === 'development' ? importScripts('gogocode.js') : importScripts('https://unpkg.com/gogocode/umd/gogocode.min.js');
 
 function runGoGoCode(sourceCode, workCode, sourceCodePath = '') {
   try {
