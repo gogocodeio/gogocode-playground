@@ -42,7 +42,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     replaceAll: _replaceAll,
   } = VSCodeContainer.useContainer();
 
-  const { gogocodeWorker } = GoGoCodeConatiner.useContainer();
+  const { runGoGoCode } = GoGoCodeConatiner.useContainer();
 
   const hasSourceCode = !isInVsCode;
 
@@ -108,14 +108,8 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
 
   useDebounce(
     async () => {
-      if (gogocodeWorker.current) {
-        const result = (await requestResponse(gogocodeWorker.current, {
-          sourceCode: inputCode,
-          workCode,
-          currentPath,
-        })) as { transformed: string };
-        setTransformedCode(result.transformed);
-      }
+      const transformed = await runGoGoCode(inputCode, workCode, currentPath);
+      setTransformedCode(transformed);
     },
     200,
     [inputCode, workCode, currentPath],

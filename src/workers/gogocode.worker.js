@@ -16,12 +16,23 @@ function runGoGoCode(sourceCode, workCode, sourceCodePath = '') {
   }
 }
 
+let current;
+
 addEventListener('message', async (event) => {
   const { sourceCode, workCode, sourceCodePath } = event.data;
 
+  if (event.data._current) {
+    current = event.data._current;
+    return;
+  }
+
   function respond(data) {
     setTimeout(() => {
-      postMessage({ _id: event.data._id, ...data });
+      if (event.data._id === current) {
+        postMessage({ _id: event.data._id, ...data });
+      } else {
+        postMessage({ _id: event.data._id, canceled: true });
+      }
     }, 0);
   }
 

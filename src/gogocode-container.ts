@@ -2,7 +2,8 @@ import { createContainer } from 'unstated-next';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import GoGoCodeWorker from 'worker-loader!./workers/gogocode.worker.js';
-import { useEffect, useRef, useState } from 'react';
+import { createWorkerQueue } from './utils/workers';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 declare global {
   interface Window {
@@ -13,6 +14,7 @@ declare global {
 function useGoGoCode() {
   const [status, setStatus] = useState('loading');
   const [version, setVersion] = useState('');
+  const gogocodeWorker = useRef<ReturnType<typeof createWorkerQueue>>();
 
   useEffect(() => {
     fetch('https://unpkg.com/gogocode/package.json')
@@ -26,17 +28,32 @@ function useGoGoCode() {
       });
   }, []);
 
-  const gogocodeWorker = useRef<Worker>();
+  const runGoGoCode = useCallback(
+    async (sourceCode: string, workCode: string, sourceCodePath: string = '') => {
+      if (!gogocodeWorker.current) {
+        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker);
+      }
+      const worker = gogocodeWorker.current;
+      const { canceled, error, transformed }: any = await worker.emit({
+        sourceCode,
+        workCode,
+        sourceCodePath,
+      });
+      if (canceled) {
+        return '';
+      }
+      if (error) {
+        return error as string;
+      }
+      return transformed as string;
+    },
+    [],
+  );
 
-  useEffect(() => {
-    gogocodeWorker.current = new GoGoCodeWorker();
-  }, []);
-
-  // const status = useScript(`/gogocode.js`);
   return {
     status,
     version,
-    gogocodeWorker,
+    runGoGoCode,
   };
 }
 
