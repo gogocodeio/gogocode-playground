@@ -2,7 +2,6 @@
 /* eslint-disable no-restricted-globals */
 // eslint-disable-next-line no-undef
 
-
 function runGoGoCode(sourceCode, workCode, sourceCodePath = '') {
   try {
     // eslint-disable-next-line no-new-func
@@ -18,13 +17,17 @@ function runGoGoCode(sourceCode, workCode, sourceCodePath = '') {
 }
 
 let current;
+let importPath = '';
 
 addEventListener('message', async (event) => {
   const { sourceCode, workCode, sourceCodePath } = event.data;
 
   if (event.data._current) {
     current = event.data._current;
-    importScripts(event.data._importPath);
+    if (event.data._importPath !== importPath) {
+      importScripts(event.data._importPath);
+      importPath = event.data._importPath;
+    }
     return;
   }
 
