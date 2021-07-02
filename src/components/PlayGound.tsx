@@ -2,9 +2,10 @@ import { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'r
 import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
 import { useLocation, useWindowSize, useDebounce } from 'react-use';
-import { runPrettier, runGoGoCode } from '../utils/index';
+import { runPrettier } from '../utils/index';
+import { requestResponse } from '../utils/workers';
 import { VSCodeContainer } from '../vscode-container';
-import { GoGoCodeConatiner } from '../gogocode-container'
+import { GoGoCodeConatiner } from '../gogocode-container';
 import BaseEditor from './BaseEditor';
 import DiffEditor from './DiffEditor';
 import SplitPane from 'react-split-pane';
@@ -38,10 +39,11 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     setCurrentPath,
     treeData,
     replaceOne: _replaceOne,
-    replaceAll: _replaceAll
+    replaceAll: _replaceAll,
   } = VSCodeContainer.useContainer();
 
-  const { gogocode } = GoGoCodeConatiner.useContainer()
+  const { gogocodeWorker } = GoGoCodeConatiner.useContainer();
+
   const hasSourceCode = !isInVsCode;
 
   const defaultWorkCode = useMemo(
@@ -69,6 +71,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
           ),
     [isInVsCode],
   );
+
   const defaultInputCode = useMemo(
     () =>
       isInVsCode
@@ -104,8 +107,15 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const [transformedCode, setTransformedCode] = useState('');
 
   useDebounce(
-    () => {
-      setTransformedCode(runGoGoCode(gogocode, inputCode, workCode, currentPath));
+    async () => {
+      if (gogocodeWorker.current) {
+        const result = (await requestResponse(gogocodeWorker.current, {
+          sourceCode: inputCode,
+          workCode,
+          currentPath,
+        })) as { transformed: string };
+        setTransformedCode(result.transformed);
+      }
     },
     200,
     [inputCode, workCode, currentPath],
@@ -173,7 +183,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   useImperativeHandle(ref, () => ({
     shareCode,
     replaceOne,
-    replaceAll
+    replaceAll,
   }));
 
   const InputCodePane = (

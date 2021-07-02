@@ -15,7 +15,7 @@ function Header(props: {
   onReplaceAll: () => void;
 }) {
   const { isInVsCode, treeData } = VSCodeContainer.useContainer();
-  const { status, gogocode } = GoGoCodeConatiner.useContainer();
+  const { status, version } = GoGoCodeConatiner.useContainer();
   return (
     <div className={clsx(props.className, 'bg-dark flex justify-between px-6 py-4')}>
       <div className="flex items-center">
@@ -36,7 +36,7 @@ function Header(props: {
       </div>
       <div className="text-base text-white flex items-center">
         <a className="mr-5" href="https://gogocode.io" target="_blank" rel="noopener noreferrer">
-          GoGoCode{status === 'ready' ? gogocode.version : ''}
+          GoGoCode{status === 'ready' ? `@${version}` : ''}
         </a>
         <GithubStar />
       </div>
@@ -46,7 +46,8 @@ function Header(props: {
 
 function InnerApp() {
   const playground = useRef(null);
-  const { status } = GoGoCodeConatiner.useContainer();
+  // const { status } = GoGoCodeConatiner.useContainer();
+  const status = 'ready';
   return (
     <div className="h-screen w-screen flex flex-col">
       <Header
