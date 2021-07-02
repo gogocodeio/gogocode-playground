@@ -1,6 +1,6 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-restricted-globals */
 // eslint-disable-next-line no-undef
-importScripts('https://unpkg.com/gogocode/umd/gogocode.min.js');
 
 
 function runGoGoCode(sourceCode, workCode, sourceCodePath = '') {
@@ -24,6 +24,11 @@ addEventListener('message', async (event) => {
 
   if (event.data._current) {
     current = event.data._current;
+    return;
+  }
+
+  if (event.data.importPath) {
+    importScripts(event.data.importPath);
     return;
   }
 

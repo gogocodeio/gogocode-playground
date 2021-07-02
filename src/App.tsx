@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import { Button, Spin } from 'antd';
 import { VSCodeContainer } from './vscode-container';
 import { GoGoCodeConatiner } from './gogocode-container';
+import { useEffect } from 'react';
 
 function Header(props: {
   className?: string;
@@ -15,7 +16,7 @@ function Header(props: {
   onReplaceAll: () => void;
 }) {
   const { isInVsCode, treeData } = VSCodeContainer.useContainer();
-  const { status, version } = GoGoCodeConatiner.useContainer();
+  const { versionStatus, version } = GoGoCodeConatiner.useContainer();
   return (
     <div className={clsx(props.className, 'bg-dark flex justify-between px-6 py-4')}>
       <div className="flex items-center">
@@ -36,7 +37,7 @@ function Header(props: {
       </div>
       <div className="text-base text-white flex items-center">
         <a className="mr-5" href="https://gogocode.io" target="_blank" rel="noopener noreferrer">
-          GoGoCode{status === 'ready' ? `@${version}` : ''}
+          GoGoCode{versionStatus === 'ready' ? `@${version}` : ''}
         </a>
         <GithubStar />
       </div>
@@ -46,8 +47,11 @@ function Header(props: {
 
 function InnerApp() {
   const playground = useRef(null);
-  // const { status } = GoGoCodeConatiner.useContainer();
-  const status = 'ready';
+  const { versionStatus, workerStatus, runGoGoCode } = GoGoCodeConatiner.useContainer();
+  // 随便转换一个触发 gogocode worker 的初始化
+  useEffect(() => {
+    runGoGoCode('', '');
+  }, [runGoGoCode]);
   return (
     <div className="h-screen w-screen flex flex-col">
       <Header
@@ -72,13 +76,13 @@ function InnerApp() {
         }}
       />
 
-      {status === 'ready' ? (
+      {versionStatus === 'ready' && workerStatus === 'ready' ? (
         <div className="flex h-full">
           <Sidebar />
           <PlayGound className="flex-auto" ref={playground} />
         </div>
       ) : (
-        <div className="flex h-full justify-center items-center">
+        <div className="bg-dark flex h-full justify-center items-center">
           <Spin size="large" />
         </div>
       )}

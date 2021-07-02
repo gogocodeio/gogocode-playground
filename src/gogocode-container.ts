@@ -1,8 +1,8 @@
 import { createContainer } from 'unstated-next';
+import PQueue from 'p-queue';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import GoGoCodeWorker from 'worker-loader!./workers/gogocode.worker.js';
-import { createWorkerQueue } from './utils/workers';
+import GoGoCodeWorker from 'worker-loader?inline=fallback!./workers/gogocode.worker.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 declare global {
@@ -11,8 +11,40 @@ declare global {
   }
 }
 
+export function createWorkerQueue(Worker: any, version: string) {
+  const worker = new Worker();
+  const queue = new PQueue({ concurrency: 1 });
+  return {
+    worker,
+    emit(data: any) {
+      queue.clear();
+      const _id = performance.now();
+      worker.postMessage({ _current: _id });
+      worker.postMessage({
+        importPath: `https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`,
+      });
+      return queue.add(
+        () =>
+          new Promise((resolve) => {
+            function onMessage(event: any) {
+              if (event.data._id !== _id) return;
+              worker.removeEventListener('message', onMessage);
+              resolve(event.data);
+            }
+            worker.addEventListener('message', onMessage);
+            worker.postMessage({ ...data, _id });
+          }),
+      );
+    },
+    terminate() {
+      worker.terminate();
+    },
+  };
+}
+
 function useGoGoCode() {
-  const [status, setStatus] = useState('loading');
+  const [versionStatus, setVersionStatus] = useState('loading');
+  const [workerStatus, setWorkerStatus] = useState('loading');
   const [version, setVersion] = useState('');
   const gogocodeWorker = useRef<ReturnType<typeof createWorkerQueue>>();
 
@@ -21,17 +53,20 @@ function useGoGoCode() {
       .then((res) => res.json())
       .then((pkg) => {
         setVersion(pkg.version);
-        setStatus('ready');
+        setVersionStatus('ready');
       })
       .catch((err) => {
-        setStatus('error');
+        setVersionStatus('error');
       });
   }, []);
 
   const runGoGoCode = useCallback(
     async (sourceCode: string, workCode: string, sourceCodePath: string = '') => {
+      if (!version) {
+        return '';
+      }
       if (!gogocodeWorker.current) {
-        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker);
+        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker, version);
       }
       const worker = gogocodeWorker.current;
       const { canceled, error, transformed }: any = await worker.emit({
@@ -39,6 +74,7 @@ function useGoGoCode() {
         workCode,
         sourceCodePath,
       });
+      setWorkerStatus('ready');
       if (canceled) {
         return '';
       }
@@ -47,11 +83,12 @@ function useGoGoCode() {
       }
       return transformed as string;
     },
-    [],
+    [version],
   );
 
   return {
-    status,
+    versionStatus,
+    workerStatus,
     version,
     runGoGoCode,
   };

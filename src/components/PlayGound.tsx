@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import copy from 'copy-to-clipboard';
 import { useLocation, useWindowSize, useDebounce } from 'react-use';
 import { runPrettier } from '../utils/index';
-import { requestResponse } from '../utils/workers';
 import { VSCodeContainer } from '../vscode-container';
 import { GoGoCodeConatiner } from '../gogocode-container';
 import BaseEditor from './BaseEditor';
