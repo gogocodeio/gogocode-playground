@@ -104,11 +104,16 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const location = useLocation();
 
   const [transformedCode, setTransformedCode] = useState('');
+  const [transformTimestamp, setTransformTimestamp] = useState(0);
 
   useDebounce(
     async () => {
+      const timestamp = Date.now();
       const transformed = await runGoGoCode(inputCode, workCode, currentPath);
-      setTransformedCode(transformed);
+      if (timestamp > transformTimestamp) {
+        setTransformTimestamp(timestamp);
+        setTransformedCode(transformed);
+      }
     },
     200,
     [inputCode, workCode, currentPath],
@@ -144,10 +149,10 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     isInVsCode && setCurrentPath('');
   };
 
-  const restartWorker = async () => {
-    const transformed = await runGoGoCode(inputCode, workCode, currentPath, true);
-    setTransformedCode(transformed);
-  };
+  // const restartWorker = async () => {
+  //   const transformed = await runGoGoCode(inputCode, workCode, currentPath, true);
+  //   setTransformedCode(transformed);
+  // };
 
   const shareCode = () => {
     setHashState({
@@ -222,9 +227,9 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
           >
             格式化
           </Button>
-          <Button type="link" onClick={restartWorker}>
+          {/* <Button type="link" onClick={restartWorker}>
             重启转换服务
-          </Button>
+          </Button> */}
         </div>
       </div>
       <BaseEditor

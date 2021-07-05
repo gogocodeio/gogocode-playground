@@ -1,5 +1,5 @@
+import * as Comlink from 'comlink';
 import { createContainer } from 'unstated-next';
-import PQueue from 'p-queue';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import GoGoCodeWorker from 'worker-loader?inline=fallback!./workers/gogocode.worker.js';
@@ -11,33 +11,50 @@ declare global {
   }
 }
 
-export function createWorkerQueue(Worker: any, version: string) {
-  const worker = new Worker();
-  const queue = new PQueue({ concurrency: 1 });
+export function createWorkerService(Worker: any, version: string, timeout: number = 5 * 1000) {
+  let worker = new Worker();
+  let workerWrapper: any = Comlink.wrap(new Worker());
+  let time = 0;
+  let isBusy = false;
+  workerWrapper.importGoGoCode(`https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`);
+
   return {
-    worker,
-    emit(data: any) {
-      queue.clear();
-      const _id = performance.now();
-      worker.postMessage({
-        _current: _id,
-        _importPath: `https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`,
-      });
-      return queue.add(
-        () =>
-          new Promise((resolve) => {
-            function onMessage(event: any) {
-              if (event.data._id !== _id) return;
-              worker.removeEventListener('message', onMessage);
-              resolve(event.data);
-            }
-            worker.addEventListener('message', onMessage);
-            worker.postMessage({ ...data, _id });
-          }),
+    restart() {
+      worker.terminate();
+      workerWrapper[Comlink.releaseProxy]();
+      worker = new Worker();
+      workerWrapper = Comlink.wrap(new Worker());
+      workerWrapper.importGoGoCode(
+        `https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`,
       );
+      time = 0;
+      isBusy = false;
+    },
+    async emit(sourceCode: string, workCode: string, sourceCodePath: string) {
+      const currentTime = Date.now();
+
+      if (isBusy) {
+        if (currentTime - time < timeout) {
+          return new Promise((resolve) => {
+            setTimeout(async () => {
+              resolve(this.emit(sourceCode, workCode, sourceCodePath));
+            }, time + timeout - currentTime);
+          });
+        } else {
+          this.restart();
+        }
+      }
+
+      isBusy = true;
+      time = currentTime;
+      const transformed = await workerWrapper.runGoGoCode(sourceCode, workCode, sourceCodePath);
+      isBusy = false;
+
+      return transformed;
     },
     terminate() {
       worker.terminate();
+      workerWrapper[Comlink.releaseProxy]();
     },
   };
 }
@@ -46,7 +63,7 @@ function useGoGoCode() {
   const [versionStatus, setVersionStatus] = useState('loading');
   const [workerStatus, setWorkerStatus] = useState('loading');
   const [version, setVersion] = useState('');
-  const gogocodeWorker = useRef<ReturnType<typeof createWorkerQueue>>();
+  const gogocodeService = useRef<ReturnType<typeof createWorkerService>>();
 
   useEffect(() => {
     fetch('https://unpkg.com/gogocode/package.json')
@@ -71,27 +88,16 @@ function useGoGoCode() {
         return '';
       }
 
-      if (restartWorker && gogocodeWorker.current) {
-        gogocodeWorker.current.terminate()
-        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker, version);
-      } else if (!gogocodeWorker.current) {
-        gogocodeWorker.current = createWorkerQueue(GoGoCodeWorker, version);
+      if (restartWorker && gogocodeService.current) {
+        gogocodeService.current.restart();
+      } else if (!gogocodeService.current) {
+        gogocodeService.current = createWorkerService(GoGoCodeWorker, version);
       }
 
-      const worker = gogocodeWorker.current;
-      const { canceled, error, transformed }: any = await worker.emit({
-        sourceCode,
-        workCode,
-        sourceCodePath,
-      });
+      const worker = gogocodeService.current;
+      const transformed: string = await worker.emit(sourceCode, workCode, sourceCodePath);
       setWorkerStatus('ready');
-      if (canceled) {
-        return '';
-      }
-      if (error) {
-        return error as string;
-      }
-      return transformed as string;
+      return transformed;
     },
     [version],
   );
