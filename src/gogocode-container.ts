@@ -10,10 +10,13 @@ declare global {
     gogocode?: any;
   }
 }
+interface WorkerConstructor {
+  new(): Worker;
+};
 
-export function createWorkerService(Worker: any, version: string, timeout: number = 5 * 1000) {
+export function createWorkerService(Worker: WorkerConstructor, version: string, timeout: number = 5 * 1000) {
   let worker = new Worker();
-  let workerWrapper: any = Comlink.wrap(new Worker());
+  let workerWrapper = Comlink.wrap<any>(new Worker());
   let time = 0;
   let isBusy = false;
   workerWrapper.importGoGoCode(`https://unpkg.zhimg.com/gogocode@${version}/umd/gogocode.min.js`);

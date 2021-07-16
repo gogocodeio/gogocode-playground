@@ -41,9 +41,8 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     replaceAll: _replaceAll,
   } = VSCodeContainer.useContainer();
 
-  const { runGoGoCode } = GoGoCodeConatiner.useContainer();
+  const { width: winWidth, height: winHeight } = useWindowSize();
 
-  const hasSourceCode = !isInVsCode;
 
   const defaultWorkCode = useMemo(
     () =>
@@ -83,29 +82,34 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     [isInVsCode],
   );
 
-  const defaultHashState = {
-    inputCode: defaultInputCode,
-    workCode: defaultWorkCode,
-    inputLang: defaultInputLang,
-    hasPrettier: defaultHasPrettier,
-    compareOutput: defaultCompareOutput,
-  };
-
-  const { width: winWidth, height: winHeight } = useWindowSize();
-
+  /** display config */
+  const hasSourceCode = !isInVsCode;
   const [hasPrettier, setHasPrettier] = useState(defaultHasPrettier);
   const [compareOutput, setCompareOutput] = useState(defaultCompareOutput);
+  /** display config */
 
   const [inputCode, setInputCode] = useState(defaultInputCode);
-  const [workCode, setWorkCode] = useState(defaultWorkCode);
   const [inputLang, setInputLang] = useState(defaultInputLang);
+  const prettierInputCode = useMemo(() => {
+    return hasPrettier ? runPrettier(inputCode, inputLang) : inputCode;
+  }, [hasPrettier, inputCode, inputLang]);
 
-  const [hashState, setHashState] = useHashState(defaultHashState);
-  const location = useLocation();
+  /** vscode sync */
+  useEffect(() => {
+    if (currentContent) {
+      setInputCode(currentContent);
+    }
+  }, [currentContent]);
 
+  /** transform with gogocode */
   const [transformedCode, setTransformedCode] = useState('');
-  const [transformTimestamp, setTransformTimestamp] = useState(0);
+  const prettierTranformedCode = useMemo(() => {
+    return hasPrettier ? runPrettier(transformedCode, inputLang) : transformedCode;
+  }, [hasPrettier, transformedCode, inputLang]);
 
+  const [workCode, setWorkCode] = useState(defaultWorkCode);
+  const [transformTimestamp, setTransformTimestamp] = useState(0);
+  const { runGoGoCode } = GoGoCodeConatiner.useContainer();
   useDebounce(
     async () => {
       const timestamp = Date.now();
@@ -118,14 +122,19 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     200,
     [inputCode, workCode, currentPath],
   );
+  /** transform with gogocode */
 
-  const prettierInputCode = useMemo(() => {
-    return hasPrettier ? runPrettier(inputCode, inputLang) : inputCode;
-  }, [hasPrettier, inputCode, inputLang]);
+  /** url related */
+  const defaultHashState = {
+    inputCode: defaultInputCode,
+    workCode: defaultWorkCode,
+    inputLang: defaultInputLang,
+    hasPrettier: defaultHasPrettier,
+    compareOutput: defaultCompareOutput,
+  };
 
-  const prettierTranformedCode = useMemo(() => {
-    return hasPrettier ? runPrettier(transformedCode, inputLang) : transformedCode;
-  }, [hasPrettier, transformedCode, inputLang]);
+  const [hashState, setHashState] = useHashState(defaultHashState);
+  const location = useLocation();
 
   useEffect(() => {
     setInputCode(hashState.inputCode);
@@ -134,13 +143,9 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     setHasPrettier(hashState.hasPrettier);
     setCompareOutput(hashState.compareOutput);
   }, [hashState]);
+  /** url related */
 
-  useEffect(() => {
-    if (currentContent) {
-      setInputCode(currentContent);
-    }
-  }, [currentContent]);
-
+  /** common actions */
   const reset = () => {
     setInputCode(defaultInputCode);
     setWorkCode(defaultWorkCode);
@@ -148,11 +153,6 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
     window.history.pushState('', document.title, location.pathname || '' + location.search);
     isInVsCode && setCurrentPath('');
   };
-
-  // const restartWorker = async () => {
-  //   const transformed = await runGoGoCode(inputCode, workCode, currentPath, true);
-  //   setTransformedCode(transformed);
-  // };
 
   const shareCode = () => {
     setHashState({
@@ -170,7 +170,9 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
       message.success('URL 已生成并拷贝到剪贴板', 2);
     }
   };
+  /** common actions */
 
+  /** vscode actions */
   const replaceOne = () => {
     if (!currentPath) {
       message.error('请先选择文件进行转换', 2);
@@ -182,6 +184,7 @@ export default forwardRef(function PlayGround(props: { className?: string }, ref
   const replaceAll = () => {
     _replaceAll(treeData, workCode);
   };
+  /** vscode actions */
 
   useImperativeHandle(ref, () => ({
     shareCode,

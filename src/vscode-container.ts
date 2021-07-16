@@ -96,9 +96,10 @@ function useVSCode() {
     [postMessage],
   );
 
-  const onSelect = (item: any) => {
+  const onSelect =  useCallback((item: any) => {
     setCurrentPath(item[0]);
-  };
+  }, [setCurrentPath]);
+  
   return {
     isInVsCode,
     filePaths,
